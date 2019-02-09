@@ -1,0 +1,37 @@
+@charset "UTF-8";
+
+table {
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+th {
+  border: 1px solid rgb(0, 0, 0);
+  padding: 2px 4px;
+  background-color: #eee8d5;
+}
+td {
+  border: 1px solid rgb(0, 0, 0);
+  padding: 2px 4px;
+}
+
+body {
+  counter-reset: section1;
+}
+body>section>h1:before {
+  counter-increment: section1;
+  content: counter(section1) ". ";
+}
+body>section {
+  counter-reset: section2;
+}
+body>section>section>h1:before {
+  counter-increment: section2;
+  content: counter(section1) "." counter(section2) ". ";
+}
+body>section>section {
+  counter-reset: section3;
+}
+body>section>section>section>h1:before {
+  counter-increment: section3;
+  content: counter(section1) "." counter(section2) "." counter(section3) ". ";
+}

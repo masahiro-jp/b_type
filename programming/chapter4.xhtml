@@ -1,0 +1,652 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>x64環境でのコンパイルについて(B type)</title>
+    <link rel="stylesheet" href="../default.css" type="text/css" />
+  </head>
+  <body>
+    <header>
+      <h1>x64環境でのコンパイルについて</h1>
+    </header>
+    <hr />
+    <section>
+      <h2 id="sec1">はじめに</h2>
+      <p>64bit環境と32bit環境でコンパイルできる環境を作る。マニュアルや解説しているWebページなどが見つからなかったので独学によるところが多く、勘違いした情報を載せている可能性が大。</p>
+    </section>
+    <section>
+      <h2 id="sec2">用意するもの</h2>
+      <ul>
+        <li>コンパイラ(Build Tools for Visual Studio 2017 から抽出)</li>
+        <li>Spy++(Build Tools for Visual Studio 2017 から抽出)</li>
+        <li>Windows10向けデバッグツール(WinDbg)</li>
+        <li>Dependency Walker(サイトからダウンロード)</li>
+        <li>ResEdit(サイトからダウンロード)</li>
+        <li>ResourceHacker(サイトからダウンロード)</li>
+        <li>DebugView(サイトからダウンロード)</li>
+      </ul>
+    </section>
+    <section>
+      <h2 id="sec3">Build Tools for Visual Studio 2017 からの抽出</h2>
+      <p>素直にインストールせず、以下のようなコマンドを叩き必要なファイルのみを抽出する。</p>
+      <p><a href="https://www.visualstudio.com/ja/thank-you-downloading-visual-studio/?sku=BuildTools&amp;rel=15">ここ</a> からダウンロードし引き抜く。</p>
+      <section>
+        <h1>コンパイラの抽出</h1>
+          <pre><code>vs_buildtools__1148561147.1509748623.exe --layout C:\vs_buildtools_offlineX --lang ja-JP
+
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.CRT.ARM.Desktop.Msi,version=14.0.24234\VC_CRT.ARM.Desktop.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.CRT.ARM.OneCore.Desktop.Msi,version=14.0.24234\VC_CRT.ARM.OneCoreDesktop.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.CRT.Headers.Msi,version=14.0.24234\VC_CRT.Headers.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.CRT.x64.Desktop.Msi,version=14.0.24234\VC_CRT.X64.Desktop.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.CRT.x64.OneCore.Desktop.Msi,version=14.0.24234\VC_CRT.X64.OneCoreDesktop.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.CRT.x86.Desktop.Msi,version=14.0.24234\VC_CRT.X86.Desktop.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.CRT.x86.OneCore.Desktop.Msi,version=14.0.24234\VC_CRT.X86.OneCoreDesktop.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.Base.X64.Msi,version=14.0.24234,chip=x64\VC_Tools.X64.Base.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.Base.X64.Msi.Resources,version=14.0.24234,chip=x64,language=ja-JP\VC_Tools.X64.Base.Res.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.Base.X86.Msi,version=14.0.24234\VC_Tools.X86.Base.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.Base.X86.Msi.Resources,version=14.0.24234,language=ja-JP\VC_Tools.X86.Base.Res.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX64.TargetARM.Msi,version=14.0.24234,chip=x64\VC_Tools.X64.ARM.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX64.TargetARM.Msi.Resources,version=14.0.24234,chip=x64,language=ja-JP\VC_Tools.X64.ARM.Res.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX64.TargetX64.Msi,version=14.0.24234,chip=x64\VC_Tools.X64.Nat.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX64.TargetX64.Msi.Resources,version=14.0.24234,chip=x64,language=ja-JP\VC_Tools.X64.Nat.Res.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX64.TargetX86.Msi,version=14.0.24234,chip=x64\VC_Tools.X64.X86.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX64.TargetX86.Msi.Resources,version=14.0.24234,chip=x64,language=ja-JP\VC_Tools.X64.X86.Res.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX86.TargetARM.Msi,version=14.0.24234\VC_Tools.X86.ARM.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX86.TargetARM.Msi.Resources,version=14.0.24234,language=ja-JP\VC_Tools.X86.ARM.Res.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX86.TargetX64.Msi,version=14.0.24234\VC_Tools.X86.X64.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.Hostx86.Targetx64.Msi.Resources,version=14.0.24234,language=ja-JP\VC_Tools.X86.X64.Res.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX86.TargetX86.Msi,version=14.0.24234\VC_Tools.X86.Nat.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.VisualC.140.Tools.HostX86.TargetX86.Msi.Resources,version=14.0.24234,language=ja-JP\VC_Tools.X86.Nat.Res.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.Windows.81SDK.Desktop.Msi,version=8.100.25984.2\Windows Software Development Kit-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.Windows.81SDK.Store.Msi,version=8.100.25984.2\Windows Software Development Kit for Windows Store Apps-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.Windows.UniversalCRT.HeadersLibsSources.Msi,version=10.0.26624.1\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Microsoft.Windows.XPSupport.Msi,version=11.0.51106.2,chip=x86\Win_XPSupport.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.10586.212,version=10.0.10586.21217\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.10586.212,version=10.0.10586.21217\Installers\Windows App Certification Kit x64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.10586.212,version=10.0.10586.21217\Installers\Windows App Certification Kit x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.10586.212,version=10.0.10586.21217\Installers\Windows SDK Desktop Headers Libs Metadata-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.10586.212,version=10.0.10586.21217\Installers\Windows SDK Desktop Tools-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.10586.212,version=10.0.10586.21217\Installers\Windows SDK for Windows Store Apps Headers Libs-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.10586.212,version=10.0.10586.21217\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.14393.795,version=10.0.14393.79517\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.14393.795,version=10.0.14393.79517\Installers\Windows App Certification Kit x64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.14393.795,version=10.0.14393.79517\Installers\Windows SDK Desktop Headers Libs Metadata-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.14393.795,version=10.0.14393.79517\Installers\Windows SDK Desktop Tools-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.14393.795,version=10.0.14393.79517\Installers\Windows SDK for Windows Store Apps Headers Libs-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.14393.795,version=10.0.14393.79517\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.15063,version=10.0.15063.1\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.15063,version=10.0.15063.1\Installers\Windows SDK Desktop Headers x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.15063,version=10.0.15063.1\Installers\Windows SDK Desktop Libs x64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.15063,version=10.0.15063.1\Installers\Windows SDK Desktop Libs x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.15063,version=10.0.15063.1\Installers\Windows SDK Desktop Tools x64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.15063,version=10.0.15063.1\Installers\Windows SDK Desktop Tools x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.15063,version=10.0.15063.1\Installers\Windows SDK for Windows Store Apps Headers-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.15063,version=10.0.15063.1\Installers\Windows SDK for Windows Store Apps Libs-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.15063,version=10.0.15063.1\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK Desktop Headers x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK Desktop Libs arm-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK Desktop Libs arm64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK Desktop Libs x64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK Desktop Libs x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK Desktop Tools arm64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK Desktop Tools x64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK Desktop Tools x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK for Windows Store Apps Headers-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK for Windows Store Apps Libs-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.16299,version=10.0.16299.2\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK Desktop Headers x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK Desktop Libs arm-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK Desktop Libs arm64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK Desktop Libs x64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK Desktop Libs x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK Desktop Tools arm64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK Desktop Tools x64-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK Desktop Tools x86-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK for Windows Store Apps Headers-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK for Windows Store Apps Libs-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_10.0.17134,version=10.0.17134.1\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_Hidden_10.0.10240_2,version=10.0.10240.117\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_Hidden_10.0.10240_2,version=10.0.10240.117\Installers\Windows SDK Desktop Headers Libs Metadata-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\vs_buildtools_offlineX\Win10SDK_Hidden_10.0.10240_2,version=10.0.10240.117\Installers\Windows SDK for Windows Store Apps Headers Libs-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+
+rename "%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0\VC\bin\amd64_arm\vctip.exe" vctip_.exe
+rename "%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0\VC\bin\amd64\vctip.exe" vctip_.exe
+rename "%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0\VC\bin\amd64_x86\vctip.exe" vctip_.exe
+rename "%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0\VC\bin\x86_arm\vctip.exe" vctip_.exe
+rename "%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\vctip.exe" vctip_.exe
+rename "%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0\VC\bin\vctip.exe" vctip_.exe</code></pre>
+      </section>
+      <section>
+        <h1>spy++ の抽出</h1>
+        <p>spy++のインストールは特殊。*.vsixをzipとして解凍する。</p>
+        <pre><code>7za e -o"%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0\Common7\Tools" -ir!"Contents\Common7\Tools" "C:\vs_buildtools_offlineX\Microsoft.VisualStudio.VC.Ide.Dskx,version=15.7.27520.0\payload.vsix"
+7za e -o"%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0\Common7\Tools\1041" -ir!"Contents\Common7\Tools\1041" "C:\vs_buildtools_offlineX\Microsoft.VisualStudio.VC.Ide.Dskx.Resources,version=15.7.27625.0,language=ja-JP\payload.vsix"</code></pre>
+        <p>Contents/Common7/Tools の下を使用する。</p>
+        <p>update4での spy++ のバージョンは 15.0.27309.0 となっていた。</p>
+        <p>update7での spy++ のバージョンは 15.0.27520.0 となっていた。</p>
+      </section>
+      <section>
+        <h1>抽出先の名前について</h1>
+        <p>抽出先は VC14U7 とする。これは、抽出すると Microsoft Visual Studio 14.0 というディレクトリが出現するため。</p>
+        <p>過去の製品の link.exe のバージョン番号となっているっぽい。
+          <ul>
+            <li>VC6: VisualStudio6.0: link.exe Ver. 6.0</li>
+            <li>VC71: VisualStudio2003: link.exe Ver. 7.10</li>
+            <li>VC8: VisualStudio2005: link.exe Ver. 8.0</li>
+            <li>VC9: VisualStudio2008: link.exe Ver. 9.0</li>
+            <li>VC10: VisualStudio2010: link.exe Ver. 10.0</li>
+            <li>VC11: VisualStudio2012: link.exe Ver. 11.0</li>
+            <li>VC12: VisualStudio2013: link.exe Ver. 12.0</li>
+            <li>VC13: VisualStudio2015: link.exe Ver. 13.0</li>
+            <li>VC14: VisualStudio2017: link.exe Ver. 14.0</li>
+          </ul>
+          U7 を付けているのは Update7 だから。
+        </p>
+        <p>抽出したファイルを使いコマンドプロンプト上で nmake する。</p>
+      </section>
+    </section>
+    <section>
+      <h2 id="sec4">Windows 10 向けデバッグ ツール (WinDbg) </h2>
+      <p><a href="https://developer.microsoft.com/ja-jp/windows/hardware/download-windbg">ここ</a> からダウンロードし引き抜く。</p>
+      <pre><code>Debuggers And Tools の抽出
+WinDbg:10.0.15063.468 AMD64
+WinDbg:10.0.15063.468 X86
+
+winsdksetup.exe /layout "C:\winsdksetup"
+
+start /wait msiexec /a "C:\winsdksetup\Installers\X64 Debuggers And Tools-x64_en-us.msi" targetdir="%USERPROFILE%\VC14U7"
+start /wait msiexec /a "C:\winsdksetup\Installers\X86 Debuggers And Tools-x86_en-us.msi" targetdir="%USERPROFILE%\VC14U7"</code></pre>
+    </section>
+    <section>
+      <h2 id="sec5">リソースエディタ</h2>
+      <p>Visual Studio のインストールはしないがリソースエディタは欲しいので <a href="http://www.resedit.net/">ResEdit</a> を使用する。</p>
+    </section>
+    <section>
+      <h2 id="sec6">Dependency Walker</h2>
+      <p><a href="http://www.dependencywalker.com/">ここ</a>からダウンロードする</p>
+      <pre><code>7za e -o"%USERPROFILE%\VC14U7\Windows Kits\10\Tools\x64" "C:\Downloads\depends22_x64.zip"
+7za e -o"%USERPROFILE%\VC14U7\Windows Kits\10\Tools\x86" "C:\Downloads\depends22_x86.zip"</code></pre>
+    </section>
+    <section>
+      <h2 id="sec7">ResourceHacker</h2>
+      <p><a href="http://www.angusj.com/resourcehacker/">ここ</a>からダウンロードする</p>
+    </section>
+    <section>
+      <h2 id="sec8">DebugView</h2>
+      <p><a href="https://technet.microsoft.com/en-us/sysinternals/bb896647.aspx">ここ</a>からダウンロードする</p>
+    </section>
+    <section>
+      <h2 id="sec9">サンプルプロジェクトのディレクトリ構成</h2>
+      <ul>
+        <li>solution01\
+          <ul>
+            <li>Debug\ - Win32のDebug実行ファイル
+              <ul>
+                <li>project01.exe</li>
+                <li>project01.pdb</li>
+              </ul>
+            </li>
+            <li>Release\ - Win32のRelease実行ファイル
+              <ul>
+                <li>project01.exe</li>
+              </ul>
+            </li>
+            <li>x64\
+              <ul>
+                <li>Debug\ - x64のDebug実行ファイル
+                  <ul>
+                    <li>project01.exe</li>
+                    <li>project01.pdb</li>
+                  </ul>
+                </li>
+                <li>Release\ - x64のRelease実行ファイル
+                  <ul>
+                    <li>project01.exe</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>project01
+              <ul>
+                <li>Debug\ - Win32のDebug中間ファイル
+                  <ul>
+                    <li>maindlg.obj</li>
+                    <li>project01.obj</li>
+                    <li>project01.pdb</li>
+                    <li>project01.res</li>
+                  </ul>
+                </li>
+                <li>Release\ - Win32のRelease中間ファイル
+                  <ul>
+                    <li>maindlg.obj</li>
+                    <li>project01.obj</li>
+                    <li>project01.res</li>
+                  </ul>
+                </li>
+                <li>x64\
+                  <ul>
+                    <li>Debug\ - x64のDebug中間ファイル
+                      <ul>
+                        <li>maindlg.obj</li>
+                        <li>project01.obj</li>
+                        <li>project01.pdb</li>
+                        <li>project01.res</li>
+                      </ul>
+                    </li>
+                    <li>Release\ - x64のRelease中間ファイル
+                      <ul>
+                        <li>maindlg.obj</li>
+                        <li>project01.obj</li>
+                        <li>project01.res</li>
+                      </ul>
+                    </li>
+                    <li>Makefile - x64用Makefile</li>
+                    <li>env.bat - x64を生成するWin32のコンパイラ</li>
+                    <li>env.lnk</li>
+                    <li>env64.bat - x64を生成するx64のコンパイラ</li>
+                    <li>env64.lnk</li>
+                  </ul>
+                </li>
+                <li>Makefile - Win32用Makefile</li>
+                <li>env.bat - Win32を生成するWin32のコンパイラ</li>
+                <li>env.lnk</li>
+                <li>env64.bat - Win32を生成するx64のコンパイラ</li>
+                <li>env64.lnk</li>
+                <li>icon1.ico</li>
+                <li>maindlg.c</li>
+                <li>resource.h</li>
+                <li>project01.c</li>
+                <li>project01.manifest</li>
+                <li>project01.rc</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2 id="sec10">バッチファイルで環境変数を設定する</h2>
+      <p>
+        コンパイラは
+        <ul>
+          <li>32bitを生成する32bitのコンパイラ(env.bat)</li>
+          <li>32bitを生成する64bitのコンパイラ(env64.bat)</li>
+          <li>64bitを生成する32bitのコンパイラ(x64\env.bat)</li>
+          <li>64bitを生成する64bitのコンパイラ(x64\env64.bat)</li>
+        </ul>
+        となっているため、4種類のコンパイル環境を用意する(arm系は使わない・・・)。
+      </p>
+      <p>以下のような環境変数を設定するバッチファイル(env.bat)を作成する(32bit用と64bit用を作る)。</p>
+      <pre><code>env.bat
+----
+@echo off
+
+rem 32bitを生成する32bitのコンパイラ
+
+set VSINSTALLDIR=%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0
+set WindowsSdkDir=%USERPROFILE%\VC14U7\Windows Kits\10
+set VCINSTALLDIR=%VSINSTALLDIR%\VC
+
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17134.0\ucrt;%WindowsSdkDir%\Include\10.0.17134.0\shared;%WindowsSdkDir%\Include\10.0.17134.0\um
+set LIB=%VCINSTALLDIR%\lib;%WindowsSdkDir%\Lib\10.0.17134.0\um\<em>x86</em>
+
+path %VCINSTALLDIR%\redist\onecore\<em>x86</em>\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin;%WindowsSdkDir%\bin\10.0.17134.0\<em>x86</em>
+
+prompt %USERNAME%@%USERDOMAIN%$g
+----
+>cl
+Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>x86</em>
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
+
+>link
+Microsoft (R) Incremental Linker Version 14.00.24234.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+ 使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
+      <pre><code>env64.bat
+----
+@echo off
+
+rem 32bitを生成する64bitのコンパイラ
+
+set VSINSTALLDIR=%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0
+set WindowsSdkDir=%USERPROFILE%\VC14U7\Windows Kits\10
+set VCINSTALLDIR=%VSINSTALLDIR%\VC
+
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17134.0\ucrt;%WindowsSdkDir%\Include\10.0.17134.0\shared;%WindowsSdkDir%\Include\10.0.17134.0\um
+set LIB=%VCINSTALLDIR%\lib;%WindowsSdkDir%\Lib\10.0.17134.0\um\<em>x86</em>
+
+path %VCINSTALLDIR%\redist\onecore\<em>x64</em>\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin<em>\amd64_x86</em>;%WindowsSdkDir%\bin\10.0.17134.0\<em>x64;%VCINSTALLDIR%\bin\amd64</em>
+
+prompt %USERNAME%@%USERDOMAIN%$g
+----
+>cl
+Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>x86</em>
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
+
+>link
+Microsoft (R) Incremental Linker Version 14.00.24234.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+ 使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
+      <p>32bit用の env64.bat の path に <code>%VCINSTALLDIR%\bin\amd64</code> がついているのは nmake がここにしかないため。</p>
+      <pre><code>x64\env.bat
+----
+@echo off
+
+rem 64bitを生成する32bitのコンパイラ
+
+set VSINSTALLDIR=%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0
+set WindowsSdkDir=%USERPROFILE%\VC14U7\Windows Kits\10
+set VCINSTALLDIR=%VSINSTALLDIR%\VC
+
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17134.0\ucrt;%WindowsSdkDir%\Include\10.0.17134.0\shared;%WindowsSdkDir%\Include\10.0.17134.0\um
+set LIB=%VCINSTALLDIR%\lib<em>\amd64</em>;%WindowsSdkDir%\Lib\10.0.17134.0\um\<em>x64</em>
+
+path %VCINSTALLDIR%\redist\onecore\<em>x86</em>\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin<em>\x86_amd64</em>;%WindowsSdkDir%\bin\10.0.17134.0\<em>x86;%VCINSTALLDIR%\bin</em>
+
+prompt %USERNAME%@%USERDOMAIN%$g
+----
+>cl
+Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>x64</em>
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
+
+>link
+Microsoft (R) Incremental Linker Version 14.00.24234.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+ 使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
+      <pre><code>x64\env64.bat
+----
+@echo off
+
+rem 64bitを生成する64bitのコンパイラ
+
+set VSINSTALLDIR=%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0
+set WindowsSdkDir=%USERPROFILE%\VC14U7\Windows Kits\10
+set VCINSTALLDIR=%VSINSTALLDIR%\VC
+
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17134.0\ucrt;%WindowsSdkDir%\Include\10.0.17134.0\shared;%WindowsSdkDir%\Include\10.0.17134.0\um
+set LIB=%VCINSTALLDIR%\lib<em>\amd64</em>;%WindowsSdkDir%\Lib\10.0.17134.0\um\<em>x64</em>
+
+path %VCINSTALLDIR%\redist\onecore\<em>x64</em>\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin<em>\amd64</em>;%WindowsSdkDir%\bin\10.0.17134.0\<em>x64</em>
+
+prompt %USERNAME%@%USERDOMAIN%$g
+----
+>cl
+Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>x64</em>
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
+
+>link
+Microsoft (R) Incremental Linker Version 14.00.24234.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+ 使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
+      <p>64bit用の env.bat の path に <code>%VCINSTALLDIR%\bin</code> がついているのは nmake がここにしかないため。</p>
+      <p>これを呼び出すショートカットを作成する。</p>
+      <pre><code>リンク先:%ComSpec% /k env.bat
+作業フォルダ:(空欄にする)</code></pre>
+      <pre><code>リンク先:%ComSpec% /k env64.bat
+作業フォルダ:(空欄にする)</code></pre>
+      <section>
+        <h1>pathについて</h1>
+        <p>全部は書いていない。主に使用するファイル。nmakeなどは特定のディレクトリにしか入っていないので、使いにくいったら・・・。</p>
+        <pre><code>%VCINSTALLDIR%\redist\onecore\x64\Microsoft.VC140.CRT
+msvcp140.dll
+vccorlib140.dll
+vcruntime140.dll
+
+%VCINSTALLDIR%\redist\onecore\x86\Microsoft.VC140.CRT
+msvcp140.dll
+vccorlib140.dll
+vcruntime140.dll
+
+%VCINSTALLDIR%\bin\amd64
+cl.exe
+dumpbin.exe
+lib.exe
+link.exe
+<em>nmake.exe</em>
+
+%VCINSTALLDIR%\bin\amd64_x86
+cl.exe
+dumpbin.exe
+lib.exe
+link.exe
+
+%VCINSTALLDIR%\bin
+cl.exe
+dumpbin.exe
+lib.exe
+link.exe
+<em>nmake.exe</em>
+
+%VCINSTALLDIR%\bin\x86_amd64
+cl.exe
+dumpbin.exe
+lib.exe
+link.exe
+
+%WindowsSdkDir%\bin\10.0.17134.0\x64
+mc.exe
+mt.exe
+oleview.exe
+rc.exe
+
+%WindowsSdkDir%\bin\10.0.17134.0\x86
+mc.exe
+mt.exe
+oleview.exe
+rc.exe
+<em>uicc.exe</em>
+
+ツール類
+
+%VCINSTALLDIR%\Common7\Tools
+spyxx.exe
+spyxx_amd64.exe
+
+%WindowsSdkDir%\Debuggers\x64
+windbg.exe
+
+%WindowsSdkDir%\Debuggers\x86
+windbg.exe
+
+%WindowsSdkDir%\Tools\x64
+depends.exe
+
+%WindowsSdkDir%\Tools\x86
+depends.exe</code></pre>
+      </section>
+    </section>
+    <section>
+      <h2 id="sec11">Makefileの作成</h2>
+      <p>これも32bit用と64bit用を作る(こちらは2種類)。</p>
+      <p>exeファイルを作る場合</p>
+      <pre><code>Makefile
+----
+# 32bit用
+
+LIBS=kernel32.lib user32.lib gdi32.lib comctl32.lib shell32.lib comdlg32.lib libcmt.lib
+
+CFLAGS=/nologo /c /TC /W3 /DWIN32 /D_WINDOWS /DUNICODE /D_UNICODE /analyze
+RFLAGS=/nologo /d WIN32 /d _WINDOWS /d UNICODE /d _UNICODE
+LDFLAGS=/NOLOGO /NODEFAULTLIB /SUBSYSTEM:WINDOWS /INCREMENTAL:NO /MANIFESTDEPENDENCY:&quot;type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='<em>x86</em>' publicKeyToken='6595b64144ccf1df' language='*'&quot;
+
+TARGETDIR=<em>..^\</em>
+PROJECTDIR=
+
+all: debug release
+
+debug: $(TARGETDIR)Debug\project01.exe
+release: $(TARGETDIR)Release\project01.exe
+
+$(TARGETDIR)Debug\project01.exe: Debug\project01.obj Debug\maindlg.obj Debug\project01.res $(PROJECTDIR)project01.manifest
+	if not exist $(TARGETDIR)Debug mkdir $(TARGETDIR)Debug
+	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:$(PROJECTDIR)project01.manifest /DEBUG /PDBALTPATH:%_PDB% /PDB:$@.pdb /OUT:$@ Debug\project01.obj Debug\maindlg.obj Debug\project01.res $(LIBS)
+
+Debug\project01.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
+	if not exist Debug mkdir Debug
+	cl $(CFLAGS) /Zi /FdDebug\project01 /Fo$@ /D_DEBUG $(PROJECTDIR)$(@B).c
+
+Debug\maindlg.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
+	cl $(CFLAGS) /Zi /FdDebug\project01 /Fo$@ /D_DEBUG $(PROJECTDIR)$(@B).c
+
+Debug\project01.res: $(PROJECTDIR)$(@B).rc $(PROJECTDIR)resource.h
+	rc $(RFLAGS) /d _DEBUG /fo $@ $(PROJECTDIR)$(@B).rc
+
+$(TARGETDIR)Release\project01.exe: Release\project01.obj Release\maindlg.obj Release\project01.res $(PROJECTDIR)project01.manifest
+	if not exist $(TARGETDIR)Release mkdir $(TARGETDIR)Release
+	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:$(PROJECTDIR)project01.manifest /OPT:REF /LTCG /OUT:$@ Release\project01.obj Release\maindlg.obj Release\project01.res $(LIBS)
+
+Release\project01.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
+	if not exist Release mkdir Release
+	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(PROJECTDIR)$(@B).c
+
+Release\maindlg.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
+	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(PROJECTDIR)$(@B).c
+
+Release\project01.res: $(PROJECTDIR)$(@B).rc $(PROJECTDIR)resource.h
+	rc $(RFLAGS) /d NDEBUG /fo $@ $(PROJECTDIR)$(@B).rc
+
+clean:
+	@for /R Debug %%I in (project01.obj maindlg.obj project01.res project01.pdb project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml) do @if exist %%I del %%I
+	@for /R Release %%I in (project01.obj maindlg.obj project01.res project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml) do @if exist %%I del %%I</code></pre>
+      <pre><code>x64\Makefile
+----
+# 64bit用
+
+LIBS=kernel32.lib user32.lib gdi32.lib comctl32.lib shell32.lib comdlg32.lib libcmt.lib
+
+CFLAGS=/nologo /c /TC /W3 /DWIN32 /D_WINDOWS /DUNICODE /D_UNICODE /analyze
+RFLAGS=/nologo /d WIN32 /d _WINDOWS /d UNICODE /d _UNICODE
+LDFLAGS=/NOLOGO /NODEFAULTLIB /SUBSYSTEM:WINDOWS /INCREMENTAL:NO /MANIFESTDEPENDENCY:&quot;type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='<em>amd64</em>' publicKeyToken='6595b64144ccf1df' language='*'&quot;
+
+TARGETDIR=<em>..\..\x64^\</em>
+PROJECTDIR=<em>..^\</em>
+
+all: debug release
+
+debug: $(TARGETDIR)Debug\project01.exe
+release: $(TARGETDIR)Release\project01.exe
+
+$(TARGETDIR)Debug\project01.exe: Debug\project01.obj Debug\maindlg.obj Debug\project01.res $(PROJECTDIR)project01.manifest
+	if not exist $(TARGETDIR)Debug mkdir $(TARGETDIR)Debug
+	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:$(PROJECTDIR)project01.manifest /DEBUG /PDBALTPATH:%_PDB% /PDB:$@.pdb /OUT:$@ Debug\project01.obj Debug\maindlg.obj Debug\project01.res $(LIBS)
+
+Debug\project01.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
+	if not exist Debug mkdir Debug
+	cl $(CFLAGS) /Zi /FdDebug\project01 /Fo$@ /D_DEBUG $(PROJECTDIR)$(@B).c
+
+Debug\maindlg.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
+	cl $(CFLAGS) /Zi /FdDebug\project01 /Fo$@ /D_DEBUG $(PROJECTDIR)$(@B).c
+
+Debug\project01.res: $(PROJECTDIR)$(@B).rc $(PROJECTDIR)resource.h
+	rc $(RFLAGS) /d _DEBUG /fo $@ $(PROJECTDIR)$(@B).rc
+
+$(TARGETDIR)Release\project01.exe: Release\project01.obj Release\maindlg.obj Release\project01.res $(PROJECTDIR)project01.manifest
+	if not exist $(TARGETDIR)Release mkdir $(TARGETDIR)Release
+	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:$(PROJECTDIR)project01.manifest /OPT:REF /LTCG /OUT:$@ Release\project01.obj Release\maindlg.obj Release\project01.res $(LIBS)
+
+Release\project01.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
+	if not exist Release mkdir Release
+	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(PROJECTDIR)$(@B).c
+
+Release\maindlg.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
+	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(PROJECTDIR)$(@B).c
+
+Release\project01.res: $(PROJECTDIR)$(@B).rc $(PROJECTDIR)resource.h
+	rc $(RFLAGS) /d NDEBUG /fo $@ $(PROJECTDIR)$(@B).rc
+
+clean:
+	@for /R Debug %%I in (project01.obj maindlg.obj project01.res project01.pdb project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml) do @if exist %%I del %%I
+	@for /R Release %%I in (project01.obj maindlg.obj project01.res project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml) do @if exist %%I del %%I</code></pre>
+      <p>cl のオプションメモ</p>
+      <ul>
+        <li>Debug
+          <dl>
+            <dt>/Zi</dt><dd>デバッグ情報を生成</dd>
+            <dt>/Fdファイル名</dt><dd>/Ziで生成されるpdbファイル名の指定</dd>
+            <dt>/Foファイル名</dt><dd>objファイル名の指定</dd>
+            <dt>/D_DEBUG</dt><dd>_DEBUG を定義</dd>
+          </dl>
+        </li>
+        <li>Release
+          <dl>
+            <dt>/GL</dt><dd>プログラム全体の最適化</dd>
+            <dt>/O2</dt>
+            <dd>コードを最速化(/O2 は次と等価 /Og /Oi /Ot /Oy /Ob2 /Gs /GF /Gy)
+              <dl>
+                <dt>/Og</dt><dd>グローバル最適化</dd>
+                <dt>/Oi</dt><dd>組み込み関数を生成</dd>
+                <dt>/Ot</dt><dd>実行可能ファイルで、実行速度を優先</dd>
+                <dt>/Oy</dt><dd>フレーム ポインターを省略(x86 のみ)</dd>
+                <dt>/Ob2</dt><dd>関数のインライン展開(2 は自動インライン)</dd>
+                <dt>/Gs</dt><dd>スタック プローブを制御</dd>
+                <dt>/GF</dt><dd>文字列プールを有効</dd>
+                <dt>/Gy</dt><dd>関数レベルのリンクを有効</dd>
+              </dl>
+            </dd>
+            <dt>/DNDEBUG</dt><dd>NDEBUG を定義(標準的には NDEBUG の有無でデバッグビルドかリリースビルドかを判断する)</dd>
+          </dl>
+        </li>
+      </ul>
+      <p>link のオプションメモ</p>
+      <ul>
+        <li>Debug
+          <dl>
+            <dt>/DEBUG</dt><dd>デバッグ情報の生成(/INCREMENTAL も指定される)</dd>
+          </dl>
+        </li>
+        <li>Release
+          <dl>
+            <dt>/OPT:REF</dt><dd>最適化(REFは参照されない関数とデータが削除される)</dd>
+            <dt>/LTCG</dt><dd>プログラム全体の最適化</dd>
+          </dl>
+        </li>
+      </ul>
+      <p>dllファイルを作る場合</p>
+      <pre><code>まだ未作成</code></pre>
+    </section>
+    <section>
+      <h2 id="sec12">マニフェストファイル</h2>
+      <p>マニフェストはproject01.exeに埋め込ませる。そのため32bitでも64bitでも影響を受けない内容をこのファイル(project01.manifest)に記述するが影響を受ける部分は各Makefile中に記述しリンク時に合体させている。</p>
+      <pre><code>project01.manifest
+----
+&lt;?xml version=&apos;1.0&apos; encoding=&apos;UTF-8&apos; standalone=&apos;yes&apos;?&gt;
+&lt;assembly xmlns=&apos;urn:schemas-microsoft-com:asm.v1&apos; manifestVersion=&apos;1.0&apos; xmlns:asmv3=&apos;urn:schemas-microsoft-com:asm.v3&apos;&gt;
+  &lt;asmv3:application&gt;
+    &lt;asmv3:windowsSettings xmlns=&apos;http://schemas.microsoft.com/SMI/2005/WindowsSettings&apos;&gt;
+      &lt;dpiAware&gt;True/PM&lt;/dpiAware&gt;
+    &lt;/asmv3:windowsSettings&gt;
+  &lt;/asmv3:application&gt;
+  &lt;compatibility xmlns=&apos;urn:schemas-microsoft-com:compatibility.v1&apos;&gt;
+    &lt;application&gt;
+      &lt;!-- Windows 10 --&gt;
+      &lt;supportedOS Id=&apos;{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}&apos; /&gt;
+      &lt;!-- Windows 8.1 --&gt;
+      &lt;supportedOS Id=&apos;{1f676c76-80e1-4239-95bb-83d0f6d0da78}&apos; /&gt;
+      &lt;!-- Windows 8 --&gt;
+      &lt;supportedOS Id=&apos;{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}&apos; /&gt;
+      &lt;!-- Windows 7 --&gt;
+      &lt;supportedOS Id=&apos;{35138b9a-5d96-4fbd-8e2d-a2440225f93a}&apos; /&gt;
+      &lt;!-- Windows Vista --&gt;
+      &lt;supportedOS Id=&apos;{e2011457-1546-43c5-a5fe-008deee3d3f0}&apos; /&gt;
+    &lt;/application&gt;
+  &lt;/compatibility&gt;
+&lt;/assembly&gt;</code></pre>
+    </section>
+    <hr />
+    <address>2018-06-17更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+  </body>
+</html>

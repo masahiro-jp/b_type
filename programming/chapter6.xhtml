@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>空のウィンドウを表示するだけのWindowsアプリケーション(B type)</title>
+    <link rel="stylesheet" href="../default.css" type="text/css" />
+  </head>
+  <body>
+    <header>
+      <h1>空のウィンドウを表示するだけのWindowsアプリケーション</h1>
+    </header>
+    <hr />
+    <section>
+      <h1 id="sec1">はじめに</h1>
+      <p>project01.c</p>
+      <pre><code>/**
+ * @file  project01.c
+ * @brief リングバッファライブラリ
+ *
+ * 一般的なリングバッファ制御のためのAPIをまとめたライブラリ。
+ *
+ * @author      mits
+ * @date        2015.01.20
+ * @version     1.0
+ * @copyright   2015 Mits Corp. All rights reserved.
+ *
+ * @par 変更履歴:
+ * - 2015.01.15: mits: 新規作成
+ * - 2015.01.20: mits: 以下の通り
+ *  1. 空きバッファサイズの計算方法がおかしかったので直す。
+ *  2. 関数名のリファクタリングを行った。
+ *      - Command* → Cm_*
+ *      - Driver* → D_*
+ */
+
+#define STRICT
+#define OEMRESOURCE
+
+#include &lt;tchar.h&gt;
+#include &lt;windows.h&gt;
+#include &lt;commctrl.h&gt;
+#include &lt;uiribbon.h&gt;
+#include &lt;initguid.h&gt;
+#include "resource.h"
+
+#define MAIN_WND_TITLE_NAME TEXT("filer1")
+
+HINSTANCE g_hInstance;
+HWND g_hActivate;
+IUIFramework *g_pFramework;
+LONG g_OutstandingObjects = 0;
+
+/** フレームワーク */
+const GUID IID_IUIFramework = {0xf4f0385d, 0x6872, 0x43a8, {0xad, 0x09, 0x4c, 0x33, 0x9c, 0xb3, 0xf5, 0xc5}};
+
+/** アプリケーション */
+const GUID IID_IUIApplication = {0xd428903c, 0x729a, 0x491d, {0x91, 0x0d, 0x68, 0x2a, 0x08, 0xff, 0x25, 0x22}};
+
+const GUID IID_IUICommandHandler = {0xefc7bdf, 0x1fdc, 0x487a, {0xbc, 0x9b, 0x24, 0xcd, 0x19, 0x29, 0x1a, 0x17}};
+
+extern LRESULT CALLBACK MainWndProc(HWND, UINT, WPARAM, LPARAM);
+
+static ATOM g_atmClass;
+
+/**
+ * アプリケーションの初期化
+ * @param hInstance
+ * @return results
+ */
+static BOOL InitApplication(HINSTANCE hInstance)
+{
+    WNDCLASSEX wcx;
+    TCHAR szErrorMessage[1025];
+
+    wcx.cbSize = sizeof(WNDCLASSEX);
+    wcx.style = 0;
+    wcx.lpfnWndProc = MainWndProc;
+    wcx.cbClsExtra = 0;
+    wcx.cbWndExtra = 0;
+    wcx.hInstance = hInstance;
+    wcx.hIcon = LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), 0);
+    wcx.hCursor = LoadImage(NULL, MAKEINTRESOURCE(OCR_NORMAL), IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
+    wcx.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcx.lpszMenuName = NULL;
+    wcx.lpszClassName = MAIN_WND_CLASS_NAME;
+    wcx.hIconSm = LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0);
+
+    g_atmClass = RegisterClassEx(&amp;wcx);
+    if (!g_atmClass) {
+        DWORD dwLastError = GetLastError();
+        wsprintf(szErrorMessage, TEXT("RegisterClassEx ERROR %u"), dwLastError);
+        MessageBox(NULL, szErrorMessage, NULL, MB_OK);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+/**
+ * インスタンスの初期化
+ * @param hInstance
+ * @param nShowCmd
+ * @return results
+ */
+static BOOL InitInstance(HINSTANCE hInstance, INT nShowCmd)
+{
+    HWND hWnd;
+    STARTUPINFO si;
+    int x, y, nWidth, nHeight;
+    TCHAR szErrorMessage[1025];
+
+    g_hInstance = GetModuleHandle(NULL);
+
+    InitCommonControls();
+
+    if (FAILED(CoInitialize(NULL))) {
+        MessageBox(NULL, TEXT("CoInitialize ERROR"), NULL, MB_OK);
+        return FALSE;
+    }
+
+    GetStartupInfo(&amp;si);
+
+    if (si.dwFlags &amp; STARTF_USEPOSITION) {
+        x = si.dwX;
+        y = si.dwY;
+    } else {
+        x = CW_USEDEFAULT;
+        y = CW_USEDEFAULT;
+    }
+
+    if (si.dwFlags &amp; STARTF_USESIZE) {
+        nWidth = si.dwXSize;
+        nHeight = si.dwYSize;
+    } else {
+        nWidth = CW_USEDEFAULT;
+        nHeight = CW_USEDEFAULT;
+    }
+
+    hWnd = CreateWindow(MAKEINTATOM(g_atmClass), MAIN_WND_TITLE_NAME,
+            WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
+            x, y, nWidth, nHeight, NULL, NULL, g_hInstance, NULL);
+    if (hWnd == NULL) {
+        DWORD dwLastError = GetLastError();
+        wsprintf(szErrorMessage, TEXT("CreateWindow ERROR %u"), dwLastError);
+        MessageBox(NULL, szErrorMessage, NULL, MB_OK);
+        return FALSE;
+    }
+
+    if (si.dwFlags &amp; STARTF_USESHOWWINDOW) {
+        ShowWindow(hWnd, si.wShowWindow);
+    } else {
+        ShowWindow(hWnd, SW_SHOWDEFAULT);
+    }
+    UpdateWindow(hWnd);
+
+    return TRUE;
+}
+
+/**
+ * @param pMsg
+ * @return results
+ */
+static BOOL PreTranslateMessage(MSG *pMsg)
+{
+    return IsDialogMessage(g_hActivate, pMsg);
+}
+
+/**
+ * @param pMsg
+ * @return results
+ */
+static INT ExitInstance(MSG *pMsg)
+{
+    CoUninitialize();
+    return (INT)pMsg-&gt;wParam;
+}
+
+/**
+ * @param hInstance
+ * @param hPrevInstance
+ * @param lpszCmdLine
+ * @param nCmdShow
+ * @return results
+ */
+INT WINAPI _tWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPTSTR lpszCmdLine, _In_ int nCmdShow)
+{
+    MSG msg;
+
+    if (!InitApplication(hInstance)) {
+        return 1;
+    }
+
+    if (!InitInstance(hInstance, nCmdShow)) {
+        return 1;
+    }
+
+    while (GetMessage(&amp;msg, NULL, 0, 0) &gt; 0) {
+        if (!PreTranslateMessage(&amp;msg)) {
+            TranslateMessage(&amp;msg);
+            DispatchMessage(&amp;msg);
+        }
+    }
+
+    return ExitInstance(&amp;msg);
+}</code></pre>
+      <p>mainwnd.c</p>
+      <pre><code>/**
+ * @file  mainwnd.c
+ * @brief メインウィンドウ
+ *
+ * 一般的なリングバッファ制御のためのAPIをまとめたライブラリ。
+ *
+ * @author      mits
+ * @date        2015.01.20
+ * @version     1.0
+ * @copyright   2015 Mits Corp. All rights reserved.
+ *
+ * @par 変更履歴:
+ * - 2015.01.15: mits: 新規作成
+ * - 2015.01.20: mits: 以下の通り
+ *  1. 空きバッファサイズの計算方法がおかしかったので直す。
+ *  2. 関数名のリファクタリングを行った。
+ *      - Command* → Cm_*
+ *      - Driver* → D_*
+ */
+
+#define STRICT
+
+#include &lt;tchar.h&gt;
+#include &lt;windows.h&gt;
+#include &lt;uiribbon.h&gt;
+#include &lt;initguid.h&gt;
+#include "resource.h"
+
+extern HINSTANCE g_hInstance;
+extern HWND g_hActivate;
+extern IUIFramework *g_pFramework;
+extern LONG g_OutstandingObjects;
+extern const GUID IID_IUIFramework;
+extern const GUID IID_IUIApplication;
+extern const GUID IID_IUICommandHandler;
+
+static IUIApplication g_Application = {NULL};
+static IUICommandHandler g_CommandHandler = {NULL};
+
+/**
+ * @param This
+ * @param vtblID
+ * @param ppv
+ * @return result
+ */
+static HRESULT STDMETHODCALLTYPE CommandHandler_QueryInterface(IUICommandHandler *This, REFIID vtblID, void **ppv)
+{
+    /* Point our IUIApplication interface to our Ribbon obj */
+    *ppv = This;
+
+    /* Ref count */
+    This-&gt;lpVtbl-&gt;AddRef(This);
+
+    return NOERROR;
+}
+
+/**
+ * @param This
+ * @return result
+ */
+static ULONG STDMETHODCALLTYPE CommandHandler_AddRef(IUICommandHandler *This)
+{
+    return InterlockedIncrement(&amp;g_OutstandingObjects);
+}
+
+/**
+ * @param This
+ * @return result
+ */
+static ULONG STDMETHODCALLTYPE CommandHandler_Release(IUICommandHandler *This)
+{
+    return InterlockedDecrement(&amp;g_OutstandingObjects);
+}
+
+/**
+ * @param This
+ * @param nCmdID
+ * @param verb
+ * @param key
+ * @param ppropvarValue
+ * @param pCommandExecutionProperties
+ * @return result
+ */
+static HRESULT STDMETHODCALLTYPE CommandHandler_Execute(IUICommandHandler *This, UINT nCmdID, UI_EXECUTIONVERB verb, const PROPERTYKEY *key, const PROPVARIANT *ppropvarValue, IUISimplePropertySet *pCommandExecutionProperties)
+{
+    HRESULT hr = S_OK;
+
+    switch (verb) {
+    case UI_EXECUTIONVERB_EXECUTE:
+        if (nCmdID == cmdMyButton) {
+            MessageBox(g_hActivate, TEXT("Clicked!"), TEXT("My Button Execute"), MB_OK);
+        }
+        break;
+    }
+
+    return hr;
+}
+
+/**
+ * @param This
+ * @param nCmdID
+ * @param key
+ * @param ppropvarCurrentValue
+ * @param ppropvarNewValue
+ * @return result
+ */
+static HRESULT STDMETHODCALLTYPE CommandHandler_UpdateProperty(IUICommandHandler *This, UINT nCmdID, REFPROPERTYKEY key, const PROPVARIANT *ppropvarCurrentValue, PROPVARIANT *ppropvarNewValue)
+{
+    return E_NOTIMPL;
+}
+
+/**
+ * @param This
+ * @param vtblID
+ * @param ppv
+ * @return result
+ */
+static HRESULT STDMETHODCALLTYPE Application_QueryInterface(IUIApplication *This, REFIID vtblID, void **ppv)
+{
+    /* No match */
+/*
+    if (!IsEqualIID(vtblID, &amp;IID_IUIApplication) &amp;&amp; !IsEqualIID(vtblID, &amp;IID_IUnknown)) {
+        *ppv = 0;
+        return E_NOINTERFACE;
+    }
+*/
+    /* Point our IUIApplication interface to our Ribbon obj */
+    *ppv = This;
+
+    /* Ref count */
+    This-&gt;lpVtbl-&gt;AddRef(This);
+
+    return NOERROR;
+}
+
+/**
+ * @param This
+ * @return result
+ */
+static ULONG STDMETHODCALLTYPE Application_AddRef(IUIApplication *This)
+{
+    return InterlockedIncrement(&amp;g_OutstandingObjects);
+}
+
+/**
+ * @param This
+ * @return result
+ */
+static ULONG STDMETHODCALLTYPE Application_Release(IUIApplication *This)
+{
+    return InterlockedDecrement(&amp;g_OutstandingObjects);
+}
+
+/**
+ * @param This
+ * @param viewId
+ * @param typeID
+ * @param view
+ * @param verb
+ * @param uReasonCode
+ * @return result
+ */
+static HRESULT STDMETHODCALLTYPE Application_OnViewChanged(IUIApplication *This, UINT32 viewId, UI_VIEWTYPE typeID, IUnknown *view, UI_VIEWVERB verb, INT32 uReasonCode)
+{
+    return E_NOTIMPL;
+}
+
+/**
+ * @param This
+ * @param commandId
+ * @param typeID
+ * @param commandHandler
+ * @return result
+ */
+static HRESULT STDMETHODCALLTYPE Application_OnCreateUICommand(IUIApplication *This, UINT32 commandId, UI_COMMANDTYPE typeID, IUICommandHandler **commandHandler)
+{
+    if (g_CommandHandler.lpVtbl == NULL) {
+        IUICommandHandlerVtbl *pC_Vtbl;
+
+        pC_Vtbl = (IUICommandHandlerVtbl *)GlobalAlloc(GMEM_FIXED, sizeof(IUICommandHandlerVtbl));
+        if (pC_Vtbl == NULL) {
+            return E_NOTIMPL;
+        }
+        pC_Vtbl-&gt;QueryInterface = CommandHandler_QueryInterface;
+        pC_Vtbl-&gt;AddRef = CommandHandler_AddRef;
+        pC_Vtbl-&gt;Release = CommandHandler_Release;
+        pC_Vtbl-&gt;Execute = CommandHandler_Execute;
+        pC_Vtbl-&gt;UpdateProperty = CommandHandler_UpdateProperty;
+
+        g_CommandHandler.lpVtbl = pC_Vtbl;
+    }
+    if (commandId == cmdMyButton) {
+        return g_CommandHandler.lpVtbl-&gt;QueryInterface(&amp;g_CommandHandler, &amp;IID_IUICommandHandler, commandHandler);
+    }
+
+    return E_NOTIMPL;
+}
+
+/**
+ * @param This
+ * @param commandId
+ * @param typeID
+ * @param commandHandler
+ * @return result
+ */
+static HRESULT STDMETHODCALLTYPE Application_OnDestroyUICommand(IUIApplication *This, UINT32 commandId, UI_COMMANDTYPE typeID, IUICommandHandler *commandHandler)
+{
+    return E_NOTIMPL;
+}
+
+/* */
+
+/**
+ * @param hWnd
+ */
+static VOID InitRibbon(HWND hWnd)
+{
+    void *pvObject;
+    IUIApplicationVtbl *pRibbon_Vtbl;
+
+    pRibbon_Vtbl = (IUIApplicationVtbl *)GlobalAlloc(GMEM_FIXED, sizeof(IUIApplicationVtbl));
+    if (pRibbon_Vtbl == NULL) {
+        MessageBox(hWnd, TEXT("GlobalAlloc ERROR"), NULL, MB_OK);
+        return;
+    }
+    pRibbon_Vtbl-&gt;QueryInterface = Application_QueryInterface;
+    pRibbon_Vtbl-&gt;AddRef = Application_AddRef;
+    pRibbon_Vtbl-&gt;Release = Application_Release;
+    pRibbon_Vtbl-&gt;OnViewChanged = Application_OnViewChanged;
+    pRibbon_Vtbl-&gt;OnCreateUICommand = Application_OnCreateUICommand;
+    pRibbon_Vtbl-&gt;OnDestroyUICommand = Application_OnDestroyUICommand;
+
+    g_Application.lpVtbl = pRibbon_Vtbl;
+    g_Application.lpVtbl-&gt;QueryInterface(&amp;g_Application, &amp;IID_IUIApplication, &amp;pvObject);
+
+    g_pFramework-&gt;lpVtbl-&gt;Initialize(g_pFramework, hWnd, &amp;g_Application);
+    g_pFramework-&gt;lpVtbl-&gt;LoadUI(g_pFramework, GetModuleHandle(NULL), TEXT("APPLICATION_RIBBON"));
+}
+
+/**
+ * WM_ACTIVATE 処理
+ * @param hWnd ウィンドウハンドル
+ * @param wParam
+ * @param lParam
+ * @return result
+ */
+static LRESULT OnActivate(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+    UINT state = (UINT)LOWORD(wParam);
+
+    if (state != WA_INACTIVE) {
+        g_hActivate = hWnd;
+    }
+
+    return DefWindowProc(hWnd, WM_ACTIVATE, wParam, lParam);
+}
+
+/**
+ * WM_CREATE 処理
+ * @param hWnd ウィンドウハンドル
+ * @param wParam
+ * @param lParam
+ * @return result
+ */
+static LRESULT OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+    CREATESTRUCT *pCreate;
+
+    pCreate = (CREATESTRUCT *)lParam;
+
+    if (FAILED(CoCreateInstance(&amp;CLSID_UIRibbonFramework, NULL, CLSCTX_INPROC_SERVER, &amp;IID_IUIFramework, &amp;g_pFramework))) {
+        MessageBox(hWnd, TEXT("CoCreateInstance ERROR"), NULL, MB_OK);
+        return -1;
+    }
+
+    InitRibbon(hWnd);
+
+    return 0;
+}
+
+/**
+ * WM_DESTROY 処理
+ * @param hWnd ウィンドウハンドル
+ * @param wParam
+ * @param lParam
+ * @return result
+ */
+static LRESULT OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+    g_pFramework-&gt;lpVtbl-&gt;Destroy(g_pFramework);
+    g_pFramework = NULL;
+    PostQuitMessage(0);
+
+    return 0;
+}
+
+/**
+ * メインウィンドウ
+ * @param hWnd ウィンドウハンドル
+ * @param uMsg
+ * @param wParam
+ * @param lParam
+ * @return result
+ */
+LRESULT CALLBACK MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    LRESULT lResult;
+
+    switch (uMsg) {
+    case WM_ACTIVATE:
+        lResult = OnActivate(hWnd, wParam, lParam);
+        break;
+/*    case WM_COMMAND:
+        lResult = OnCommand(hWnd, wParam, lParam);
+        break;
+    case WM_SIZE:
+        lResult = OnSize(hWnd, wParam, lParam);
+        break;*/
+    case WM_DESTROY:
+        lResult = OnDestroy(hWnd, wParam, lParam);
+        break;
+    case WM_CREATE:
+        lResult = OnCreate(hWnd, wParam, lParam);
+        break;
+    default:
+        lResult = DefWindowProc(hWnd, uMsg, wParam, lParam);
+    }
+
+    return lResult;
+}</code></pre>
+    </section>
+    <hr />
+    <address>2017-11-07更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+  </body>
+</html>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>linux関連(B type)</title>
+    <link rel="stylesheet" href="../default.css" type="text/css" />
+  </head>
+  <body>
+    <h1>linux関連</h1>
+    <hr />
+    <p>主にdebian関連になると思う。</p>
+    <section>
+      <h1>CUIとして使う場合</h1>
+      <section>
+        <h1>sshインストール</h1>
+        <pre><code>aptitude update
+aptitude upgrade
+aptitude install ssh</code></pre>
+      </section>
+      <section>
+        <h1>adduserとuseraddの違い</h1>
+        <p>debianに限った話。Fedora/CentOS系では両者は同じコマンドらしい。</p>
+        <ul>
+          <li>useraddはコマンド一発<br />原始的なコマンドでユーザー追加の基本コマンド</li>
+          <li>adduserは対話形式(実態はperlスクリプト)<br />名前は何にする？パスワードは何？とWindowsでいうウィザード形式でユーザーを作る</li>
+        </ul>
+        <p>adduserを使うほうが無難といえる。</p>
+      </section>
+      <section>
+        <h1>subversion</h1>
+        <pre class="commandline"><code>aptitude install subversion</code></pre>
+        <section>
+          <h1>svn://サーバー名/リポジトリ名 として運用する場合</h1>
+          <ol>
+            <li>rootユーザーで実行
+              <ol>
+                <li>svnグループ追加<pre class="commandline"><code>addgroup svn</code></pre></li>
+                <li>svnユーザー追加<pre class="commandline"><code>adduser --ingroup svn svn</code></pre></li>
+              </ol>
+            </li>
+            <li>svnユーザーで実行
+              <ol>
+                <li>初回インポート用ディレクトリ作成<pre class="commandline"><code>cd
+mkdir template
+cd template
+mkdir trunk branches tags</code></pre>
+                </li>
+                <li>リポジトリルートの作成<pre class="commandline"><code>mkdir /var/svn</code></pre></li>
+              </ol>
+            </li>
+            <li>rootユーザーで実行
+              <ol>
+                <li>svnservを自動起動するようにする<br />/etc/rc.d/rc.local に以下の行を追加(Fedora/CentOS系の場合)<br />/etc/rc.local に以下の行を追加(debianの場合)<pre class="commandline"><code>su - svn -c '/usr/bin/svnserve -d -r /var/svn'</code></pre>OSを再起動させない場合は上記コマンドを手動で実行する。</li>
+                <li>メモ:rc.localを使わないのが最近の主流っぽいが難しいので上記の方法を利用する</li>
+              </ol>
+            </li>
+            <li>リポジトリの作成(svnユーザーで実行)
+              <ol>
+                <li>リポジトリの作成<pre class="commandline"><code>svnadmin create /var/svn/testproj1</code></pre></li>
+                <li>インポート<pre class="commandline"><code>svn import /home/svn/template file:///var/svn/testproj1 -m &quot;Initial import.&quot;</code></pre></li>
+              </ol>
+            </li>
+            <li>ユーザーの管理<br />/var/svn/testproj1/conf の下をいじる
+              <ul>
+                <li>authzはいじらない</li>
+                <li>passwdは&lt;ユーザー名&gt; = &lt;パスワード&gt;という形でメンバーを登録する</li>
+                <li>svnserve.confは<pre class="commandline"><code>anon-access = read ※noneでもいいかもしれない
+auth-access = write
+password-db = passwd</code></pre>を有効にする</li>
+              </ul>
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h1>svn+ssh://サーバー名/リポジトリ名 として運用する場合(未調査)</h1>
+        </section>
+        <section>
+          <h1>リポジトリのバックアップ</h1>
+          <section>
+            <h1>svnadminを使用する場合</h1>
+          </section>
+        </section>
+        <section>
+          <h1>リストア</h1>
+          <section>
+            <h1>svnadminを使用する場合</h1>
+            <pre class="commandline"><code>svnadmin create /var/svn/testproj1
+svnadmin load /var/svn/testproj1 &lt; /home/svn/testproj1/testproj1.dump</code></pre>
+          </section>
+        </section>
+      </section>
+      <section>
+        <h1>7-zipファイルを扱う</h1>
+        <pre class="commandline"><code>aptitude install p7zip-full</code></pre>
+        <section>
+          <h1>圧縮するとき</h1>
+          <pre class="commandline"><code>7za a sample.7z sample/</code></pre>
+        </section>
+        <section>
+          <h1>解凍するとき</h1>
+          <pre class="commandline"><code>7za e sample.7z</code></pre>
+        </section>
+        <section>
+          <h1>リスト表示</h1>
+          <pre class="commandline"><code>7za | sample.7z</code></pre>
+        </section>
+      </section>
+      <section>
+        <h1>debianで補助的にtesting, unstableパッケージを使えるようにする設定</h1>
+        <p>基本はstableで使いつつ、使ってみたい新しいパッケージがある場合だけ、testing、unstableから持ってくるような使い方をする場合のaptの設定メモ。</p>
+        <ol>
+          <li>/etc/apt/source.list.d の下に testing.list、unstable.list ファイルを追加。<br />testing.list<pre class="commandline"><code>deb http://ftp.jp.debian.org/debian/ testing main contrib non-free
+deb-src http://ftp.jp.debian.org/debian/ testing main contrib non-free</code></pre>unstable.list<pre class="commandline"><code>deb http://ftp.jp.debian.org/debian/ unstable main contrib non-free
+deb-src http://ftp.jp.debian.org/debian/ unstable main contrib non-free</code></pre></li>
+          <li>優先度の設定<br />/etc/apt/preferences.d の下に以下のファイルを新規作成<br />testing<pre class="commandline"><code>Package: *
+Pin: release a=testing
+Pin-Priority: 80</code></pre>unstable<pre class="commandline"><code>Package: *
+Pin: release a=unstable
+Pin-Priority: 90</code></pre></li>
+          <li><pre class="commandline"><code>apt-get update</code></pre></li>
+        </ol>
+        <p>以上。<br />必要に応じて、-t unstable オプションを指定して unstableの パッケージを利用できる。</p>
+      </section>
+      <section>
+        <h1>debianにwandisco の subversion をインストールできるようにする</h1>
+        <ol>
+          <li>preferencesの設定<br />/etc/apt/preferences.d の下に以下のファイルを新規作成<br />wandisco-subversion.pref<pre><code>Package: *subversion* *svn*
+Pin: origin opensource.wandisco.com
+Pin-Priority: 950</code></pre></li>
+          <li>source.list の設定<br />/etc/apt/source.list.d の下に以下のファイルを作成<br />wandisco-subversion.list<pre><code>deb http://opensource.wandisco.com/debian/ wheezy svn18</code></pre></li>
+          <li>gpg の設定<br /><pre><code>wget -q -O - http://opensource.wandisco.com/wandisco-debian.gpg | sudo apt-key add -</code></pre></li>
+          <li><pre><code>apt-get update
+apt-get install subversion subversion-tools</code></pre></li>
+        </ol>
+      </section>
+    </section>
+    <hr />
+    <address>2014-08-27更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+  </body>
+</html>

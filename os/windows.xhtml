@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Windows関連(B type)</title>
+    <link rel="stylesheet" href="../default.css" type="text/css" />
+  </head>
+  <body>
+    <h1>Windows関連</h1>
+    <hr />
+    <h2 id="sec1">Program Filesの移動(対象:Windows xp)</h2>
+    <ol>
+      <li>パソコンをセーフモードとコマンドプロンプトで立ち上げる。</li>
+      <li>Administratorでログインし、以下のコマンドを実行。<br />
+      <pre><code>&gt; d:
+&gt; mkdir ○○○○
+&gt; c:
+&gt; xcopy "C:\Program Files" d:\○○○○\ /e/c/h/k/o</code></pre>
+      </li>
+      <li>再起動後、regedit</li>
+      <li>H_KEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersionへ移動</li>
+      <li>ProgramFilesDirの値をC:\Program FilesからD:\○○○○</li>
+      <li>CommonFilesDirの値も同様に</li>
+    </ol>
+    <h2 id="sec2">Documents and Settingsの移動(対象:Windows xp)</h2>
+    <ol>
+      <li>パソコンをセーフモードとコマンドプロンプトで立ち上げる。</li>
+      <li>Administratorでログインし、以下のコマンドを実行。<br />
+        <pre><code>&gt; xcopy "C:\Documents and Settings" d:\○○○○\ /e/c/h/k/o</code></pre>
+      </li>
+      <li>再起動後、regedit</li>
+      <li>H_KEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\ProfileList へ移動</li>
+      <li>ProfilesDirectoryの値をC:\Documents and SettingsからD:\○○○○</li>
+      <li>S-1-5-21-1957994488-1708537768-1904577907-1003などと書かれているキーのそれぞれのProfileImagePathの値を変更</li>
+    </ol>
+    <h2 id="sec3">Firefoxの起動速度を改善する</h2>
+    <p>ショートカットのリンク先欄に"/Prefetch:1"を付けると良いらしい。<br />・・・というのはガセネタらしい。<a href="http://d.hatena.ne.jp/cxx/20070930/1191113910">Firefoxに"/prefetch:1"オプションは無意味</a>を参照するとわかる。<br /></p>
+    <h2 id="sec4">圧縮ファイルを除外(Windows xp)</h2>
+    <p>Administratorでログオンし落とせるアプリを全て落として以下のコマンドを実行。</p>
+    <pre><code>&gt; regsvr32 /u zipfldr.dll
+&gt; regsvr32 /u cabview.dll</code></pre>
+    <p>これをしたあと、すぐに再起動をする。これは状況にもよるが設定が復活するパターンがあるらしいため。</p>
+    <h2 id="sec5">検索コンパニオンを表示しないようにする</h2>
+    <p>管理者権限でレジストリをいじってもよいが、ここではそれをせずに変更する。</p>
+    <ol>
+      <li>検索ウインドウを開き、キャラクターの所で右クリック。以下の画面になる。<br /><img src="sec5_step1.png" alt="Step1" width="640" height="452" /></li>
+      <li>アニメーションキャラクタを表示しない を選択。<br /><img src="sec5_step2.png" alt="Step2" width="640" height="452" /></li>
+      <li>設定を変更する を選択。<br /><img src="sec5_step3.png" alt="Step3" width="640" height="452" /></li>
+      <li>ファイルとフォルダの検索の動作を変更する を選択。<br /><img src="sec5_step4.png" alt="Step4" width="640" height="452" /></li>
+      <li>上級者向け を選択。<br /><img src="sec5_step4.png" alt="Step4" width="640" height="452" /></li>
+      <li>これで以前の検索ウインドウに戻った。<br /><img src="sec5_step5.png" alt="Step5" width="640" height="452" /></li>
+    </ol>
+    <p>戻したいときは設定を変更する の所でアニメーションキャラクタを表示する を選択すればよい。</p>
+    <hr />
+    <address>2014-08-03更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+  </body>
+</html>

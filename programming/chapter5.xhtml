@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>batファイルノウハウ(B type)</title>
+    <link rel="stylesheet" href="../default.css" type="text/css" />
+  </head>
+  <body>
+    <h2>batファイルノウハウ</h2>
+    <hr />
+    <h3>環境変数の中に環境変数をセットする</h3>
+    <p>A1には Z:\NN\Program Files\xyz.bat がセットされていて、B1には Z:\NN\ がセットされている。</p>
+    <p>A1の中のB1を取り除きたいとする。</p>
+    <p>以下のようにしてもうまくいかない</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+set A1=Z:\NN\Program Files\Work\xyz.bat
+set B1=Z:\NN\
+
+set C1=<em>%A1:%B1%=%</em>
+
+echo A1 = %A1%
+echo B1 = %B1%
+echo C1 = %C1%
+--
+C:\&gt;sample.bat
+A1 = Z:\NN\Program Files\Work\xyz.bat
+B1 = Z:\NN\
+C1 = B1</code></pre>
+    <p>これは <code>set C1 = <em>%</em>A1:<em>%</em> B1 <em>%</em>=<em>%</em></code> と解釈されてしまうため。次のようにする。</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+set A1=Z:\NN\Program Files\Work\xyz.bat
+set B1=Z:\NN\
+
+<em>call</em> set C1=<em>%%</em>A1:%B1%=<em>%%</em>
+
+echo A1 = %A1%
+echo B1 = %B1%
+echo C1 = %C1%
+--
+C:\&gt;sample.bat
+A1 = Z:\NN\Program Files\Work\xyz.bat
+B1 = Z:\NN\
+C1 = Z:\\Program Files\Work\xyz.bat</code></pre>
+    <h3>コマンドの実行結果を変数に入れる</h3>
+    <p>以下の例は たまたま うまく動いているように見えるが使えないパターン。</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+for /f %%I in ('dir /b') do set A1=%%I
+echo A1 = %A1%
+--
+C:\&gt;sample.bat
+A1 = xyz.bat</code></pre>
+    <p>実際にはコマンドをフルパスで指定したい場合がほとんどとなる(しかもフルパスには空白が含まれるかもしれない)。また実行結果に空白が含まれるとそれ以降の文字列を取り込んでくれない欠点がある。</p>
+    <p>以下のようにする。コマンド名は仮に sample - 1.bat というコマンドとする。</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+for /f <em>&quot;delims=&quot;</em> %%I in ('<em>&quot;sample - 1.bat&quot;</em>') do set A1=%%I
+echo A1 = %A1%
+--</code></pre>
+    <p>delimsを使用するが何も指定しないのがポイント。これで出力結果がすべて取り込まれる。</p>
+    <p>shのマネをしてバッククォート ` を使用する場合は以下のようにする。マネする必要があるのか？</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+for /f <em>&quot;usebackq&quot;</em> %%I in (<em>`</em>dir /b<em>`</em>) do set A1=%%I
+echo A1 = %A1%
+--
+C:\&gt;sample.bat
+A1 = xyz.bat</code></pre>
+    <h3>basename</h3>
+    <pre><code>sample.bat
+--
+@echo off
+
+set A1=Z:\NN\Program Files\Work\x y z.bat
+
+for <em>/f &quot;delims=&quot;</em> %%I in (<em>&quot;</em>%A1%<em>&quot;</em>) do set B1=%%~nxI
+echo B1 = %B1%
+--
+C:\&gt;sample.bat
+B1 = x y z.bat</code></pre>
+    <p>ポイントは2つ。</p>
+    <p>inの中身をダブルクォーテーションでくくることで for に文字列として処理するよう認識させる。</p>
+    <p>delimsを使用し(区切り文字は指定しない)、デフォルトの空白を区切り文字として認識させないようにする。これで空白を含むパス名でも対応できるようにする。</p>
+    <h3>touch</h3>
+    <p>touchコマンドは2つの動きがある。</p>
+    <p>1つは対象ファイルが存在する場合、そのファイルの更新日時だけを変更する。</p>
+    <p>もう1つは対象ファイルが存在しない場合、0バイトのファイルを作成する。</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+set A1=Z:\\Program Files\Work\xyz.bat
+
+if exist %A1% (
+    copy /b %A1% +,, &gt; nul
+) else (
+    copy nul %A1% &gt; nul
+)
+--</code></pre>
+    <p>更新日時だけを変更する所は <code>copy /b %A1% + &gt; nul</code> でも動くようだが、この <code>,,</code> を付けることでファイルのコピーではないことを明記している。</p>
+    <p>注意</p>
+    <p>1行で書くこともできるが、以下のように書いてはいけない。</p>
+    <pre><code>sample.bat
+--
+if exist %A1% copy /b %A1% +,, &gt; nul else copy nul %A1% &gt; nul
+--</code></pre>
+    <p>else側が無視されてしまう。するなら、</p>
+    <pre><code>sample.bat
+--
+if exist %A1% (copy /b %A1% +,, &gt; nul) else (copy nul %A1% &gt; nul)
+--</code></pre>
+    <p>このようにする。</p>
+    <h3>ファイルがゼロバイトかどうか調べる</h3>
+    <pre><code>sample.bat
+--
+@echo off
+
+set A1=Z:\NN\Program Files\Work\xyz.bat
+
+if exist &quot;%A1%&quot; (
+    for %%F in (&quot;%A1%&quot;) do if %%~zF equ 0 (
+        echo 0byte!
+    )
+)
+--</code></pre>
+    <p>forだけで判断してしまうと、存在していないファイルに対しても%~zが0を返してしまう(実際には空文字のようだが数値として比較するとゼロとみなされる)。</p>
+    <p>上の例でも十分実用的とは思うが、ifとforの間でファイルが消えているケースも想定できる。</p>
+    <p>例えば、A1ファイルが5バイト程のファイルだったとして、ifではファイルが存在すると判断されるが、forの直前でファイルが消されると、A1はゼロバイトのファイルだったと誤認識してしまう。</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+set A1=Z:\NN\Program Files\Work\xyz.bat
+
+for %%F in (&quot;%A1%&quot;) do (
+    if &quot;%%~zF&quot; neq &quot;&quot; (
+        if %%~zF equ 0 (
+            echo 0byte!
+        ) else (
+            echo %%~zFbyte!
+        )
+    ) else (
+        exit Not File Exists!
+    )
+)
+--</code></pre>
+    <p>なんてこともできる。ここまでする必要があるかどうか・・・。</p>
+    <h3>行数を数える</h3>
+    <p>findで可能そうに見えるが、対象ファイルの最終行あたりに空行が続くとうまくカウントされない。</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+set A1=C:\Program Files\Work\xyz.txt
+
+for /f &quot;delims=&quot; %%I in ('type &quot;%A1%&quot; ^| find /c /v &quot;&quot;') do set /a B1=%%I
+
+echo B1 = %B1%
+--</code></pre>
+    <p>パイプ(|)を使うときは手前に^を付けてやる。</p>
+    <h3>遅延環境変数</h3>
+    <p>大きめのifなどで、やってしまうミス。</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+set N1=
+if defined N1 (
+    if <em>%N1%</em> lss 0 (
+        echo N1 is マイナス
+    )
+) else (
+  echo N1 が定義されていない
+)
+--
+C:\&gt;sample.bat
+0 の使い方が誤っています。</code></pre>
+  <p>1番目の if で定義されているかどうかのチェックをしているから大丈夫と思いがちだが if の中の環境変数が一気に変換されるので、2つめの if が <code>if lss 0 (</code>という形になり、文法エラーとなる。</p>
+  <p>こういう場合は遅延環境変数で対応するしかない。</p>
+    <pre><code>sample.bat
+--
+@echo off
+
+set N1=
+if defined N1 (
+    if <em>!N1!</em> lss 0 (
+        echo N1 is マイナス
+    )
+) else (
+  echo N1 が定義されていない
+)
+--
+C:\&gt;sample.bat
+N1 が定義されていない</code></pre>
+    <hr />
+    <address>2017-09-10更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+  </body>
+</html>

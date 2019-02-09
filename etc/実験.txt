@@ -1,0 +1,185 @@
+yum install gcc-c++ perl lynx bzip2 patch openssl-devel readline-devel zlib-devel curl-devel libyaml-devel libffi-devel pcre-devel systemd-devel gdbm-devel bison ImageMagick ImageMagick-devel ipa-pgothic-fonts
+
+
+curl -O http://ftp.jaist.ac.jp/pub/apache/apr/apr-1.5.2.tar.gz
+curl -O http://ftp.jaist.ac.jp/pub/apache/apr/apr-util-1.5.4.tar.gz
+curl -O http://ftp.jaist.ac.jp/pub/apache/httpd/httpd-2.4.25.tar.gz
+curl -O http://www.sqlite.org/2017/sqlite-autoconf-3170000.tar.gz
+curl -O https://nchc.dl.sourceforge.net/project/scons/scons/2.5.1/scons-2.5.1.tar.gz
+curl -O http://archive.apache.org/dist/serf/serf-1.3.9.tar.bz2
+curl -O http://ftp.riken.jp/net/apache/subversion/subversion-1.9.5.tar.gz
+curl -O https://ftp.postgresql.org/pub/source/v9.6.2/postgresql-9.6.2.tar.gz
+curl -O https://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.4.tar.gz
+curl -O http://www.redmine.org/releases/redmine-3.3.2.tar.gz
+
+cd /home/masahiro
+tar xvf apr-1.5.2.tar.gz --no-same-owner -C /usr/local/src
+cd /usr/local/src/apr-1.5.2
+./configure
+make
+make install
+
+cd /home/masahiro
+tar xvf apr-util-1.5.4.tar.gz --no-same-owner -C /usr/local/src
+cd /usr/local/src/apr-util-1.5.4
+./configure --with-apr=/usr/local/apr
+make
+make install
+
+cd /home/masahiro
+tar xvf httpd-2.4.25.tar.gz --no-same-owner -C /usr/local/src
+cd /usr/local/src/httpd-2.4.25
+./configure --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr
+make
+make install
+
+mv /usr/local/apache2/conf/httpd.conf /usr/local/apache2/conf/httpd.conf.bak
+sed "s/daemon$/apache/g" /usr/local/apache2/conf/httpd.conf.bak > /usr/local/apache2/conf/httpd.conf
+useradd -d /var/empty -s /sbin/nologin apache
+chown -R apache:apache /usr/local/apache2
+
+cat << EOT > /usr/lib/systemd/system/httpd.service
+[Unit]
+Description=httpd-2.4.25 daemon
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/apache2/bin/apachectl start
+ExecReload=/usr/local/apache2/bin/apachectl restart
+ExecStop=/usr/local/apache2/bin/apachectl stop
+
+[Install]
+WantedBy=multi-user.target
+EOT
+
+systemctl enable httpd
+
+cd /home/masahiro
+tar xvf sqlite-autoconf-3170000.tar.gz --no-same-owner -C /usr/local/src
+cd /usr/local/src/sqlite-autoconf-3170000
+./configure
+make
+make install
+
+cd /home/masahiro
+tar xvf scons-2.5.1.tar.gz --no-same-owner -C /usr/local/src
+cd /usr/local/src/scons-2.5.1
+python setup.py install
+
+cd /home/masahiro
+tar xjf serf-1.3.9.tar.bz2 --no-same-owner -C /usr/local/src
+cd /usr/local/src/serf-1.3.9
+scons APR=/usr/local/apr APU=/usr/local/apr OPENSSL=/usr/bin
+scons install
+
+cd /home/masahiro
+tar xvf subversion-1.9.5.tar.gz --no-same-owner -C /usr/local/src
+cd /usr/local/src/subversion-1.9.5
+./configure --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr --with-serf=/usr/local/ --with-apxs=/usr/local/apache2/bin/apxs
+make
+make install
+
+mkdir -p /var/lib/svn/repos
+chown apache:apache /var/lib/svn/repos
+
+cat << EOT > /usr/local/apache2/conf/extra/svn.conf
+LoadModule dav_svn_module /usr/local/libexec/mod_dav_svn.so
+LoadModule dav_svn_module /usr/local/libexec/mod_authz_svn.so
+<Location /repos>
+    DAV svn
+    SVNParentPath /var/lib/svn/repos
+</Location>
+EOT
+
+echo Include conf/extra/svn.conf >> /usr/local/apache2/conf/httpd.conf
+
+mv -f /usr/local/apache2/conf/httpd.conf /usr/local/apache2/conf/httpd.conf.bak
+sed "s@#LoadModule dav_module modules/mod_dav.so@LoadModule dav_module modules/mod_dav.so@" /usr/local/apache2/conf/httpd.conf.bak > /usr/local/apache2/conf/httpd.conf
+
+cd /home/masahiro
+tar xvf postgresql-9.6.2.tar.gz --no-same-owner -C /usr/local/src
+cd /usr/local/src/postgresql-9.6.2
+./configure --with-openssl --with-systemd
+make
+make install
+
+adduser postgres
+mkdir /usr/local/pgsql/data
+chown postgres:postgres /usr/local/pgsql/data
+su - postgres
+/usr/local/pgsql/bin/initdb -D /usr/local/pgsql/data
+exit
+
+cat << EOT > /usr/lib/systemd/system/postgres.service
+[Unit]
+Description=PostgreSQL database server
+
+[Service]
+Type=notify
+User=postgres
+ExecStart=/usr/local/pgsql/bin/postgres -D /usr/local/pgsql/data
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutSec=0
+
+[Install]
+WantedBy=multi-user.target
+EOT
+
+systemctl enable postgres
+systemctl start postgres
+
+cd /home/masahiro
+tar xvf ruby-2.3.4.tar.gz --no-same-owner -C /usr/local/src
+cd /usr/local/src/ruby-2.3.4
+./configure --disable-install-doc
+make
+make install
+
+gem install bundler --no-rdoc --no-ri
+gem install passenger --no-rdoc --no-ri
+passenger-install-apache2-module -a --apxs2-path /usr/local/apache2/bin/apxs --apr-config-path /usr/local/apr/bin/apr-1-config --languages ruby
+
+
+cat << EOT > /usr/local/apache2/conf/extra/redmine.conf
+# Passengerの基本設定。
+# passenger-install-apache2-module --snippet で表示された設定を記述。
+# 環境によって設定値が異なるため以下の3行はそのまま転記せず、必ず
+# passenger-install-apache2-module --snippet で表示されたものを使用すること。
+#
+EOT
+passenger-install-apache2-module --snippet >> /usr/local/apache2/conf/extra/redmine.conf
+cat << EOT >> /usr/local/apache2/conf/extra/redmine.conf
+
+# Passengerが追加するHTTPヘッダを削除するための設定（任意）。
+#
+Header always unset "X-Powered-By"
+Header always unset "X-Runtime"
+
+# 必要に応じてPassengerのチューニングのための設定を追加（任意）。
+# 詳しくはPhusion Passenger users guide(https://www.phusionpassenger.com/library/config/apache/reference/)参照。
+PassengerMaxPoolSize 20
+PassengerMaxInstancesPerApp 4
+PassengerPoolIdleTime 864000
+PassengerHighPerformance on
+PassengerStatThrottleRate 10
+PassengerSpawnMethod smart
+PassengerFriendlyErrorPages off
+EOT
+
+echo Include conf/extra/redmine.conf >> /usr/local/apache2/conf/httpd.conf
+
+
+----
+
+mv -f /usr/local/pgsql/data/pg_hba.conf /usr/local/pgsql/data/pg_hba.conf.bak
+sed "s/^host/#host/g" /usr/local/pgsql/data/pg_hba.conf.bak > /usr/local/pgsql/data/pg_hba.conf
+cat << EOT >> /usr/local/pgsql/data/pg_hba.conf
+host    redmine_a_db       redmine_a_user       127.0.0.1/32            md5
+host    redmine_a_db       redmine_a_user       ::1/128                 md5
+EOT
+
+su - postgres
+createuser -P redmine_a_user

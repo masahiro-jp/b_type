@@ -1,0 +1,14 @@
+
+
+cd
+curl -O https://svwh.dl.sourceforge.net/project/mod-auth-shadow/mod_auth_shadow2/2.3/mod_auth_shadow-2.3.tar.gz
+su
+
+
+tar xvf mod_auth_shadow-2.3.tar.gz --no-same-owner -C /usr/local/src
+cd /usr/local/src/mod_auth_shadow_2.3
+
+makefile�̕ҏW
+
+APXS = /usr/local/apache2/bin/apxs
+INSTBINDIR = /usr/local/sbin

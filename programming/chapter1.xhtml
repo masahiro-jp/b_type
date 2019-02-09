@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>WindowsSDK(B type)</title>
+    <link rel="stylesheet" href="../default.css" type="text/css" />
+  </head>
+  <body>
+    <header>
+      <h1>WindowsSDK</h1>
+    </header>
+    <hr />
+    <section>
+      <h1 id="sec1">WinMainの雛型</h1>
+      <p>だいたいこんな形になる
+      <pre><code>INT WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, INT nShowCmd)
+{
+    MSG msg;
+
+    if (!InitInstance(hInstance, nShowCmd)) {
+        return 1;
+    }
+
+    while (GetMessage(&amp;msg, NULL, 0, 0) &gt; 0) {
+
+        if (!PreTranslateMessage(&amp;msg)) {
+            TranslateMessage(&amp;msg);
+            DispatchMessage(&amp;msg);
+        }
+    }
+
+    return ExitInstance(&amp;msg);
+}</code></pre></p>
+      <p>一時期は<pre><code>    while (GetMessage(&amp;msg, NULL, 0, 0)) {</code></pre>と書いていたが、戻り値が真と偽以外の値も返すということなので上記のようになった。</p>
+    </section>
+    <section>
+      <h1 id="sec2">FormatMessageメモ</h1>
+      <pre><code>DWORD WINAPI FormatMessage(
+    _In_     DWORD   dwFlags,
+    _In_opt_ LPCVOID lpSource,
+    _In_     DWORD   dwMessageId,
+    _In_     DWORD   dwLanguageId,
+    _Out_    LPTSTR  lpBuffer,
+    _In_     DWORD   nSize,
+    _In_opt_ va_list *Arguments
+  );</code></pre>
+      <p>LoadStringと組み合わせて以下のように使える。</p>
+      <pre><code>VOID CreateMessage(PTSTR pszString, INT n, INT id, ...)
+{
+    va_list args;
+    TCHAR szWork[1024 + 1];
+
+    va_start(args, id);
+
+    LoadString(g_hInstance, id, szWork, sizeof(szWork) / sizeof(TCHAR));
+
+    FormatMessage(FORMAT_MESSAGE_FROM_STRING, szWork, 0, 0, pszString, n, &amp;args);
+
+    va_end(args);
+}
+
+VOID Hoge(VOID)
+{
+    TCHAR szWork[1024 + 1];
+    CreateMessage(szWork, sizeof(szWork) / sizeof(TCHAR), IDS_STRING1, 10);
+
+    SetWindowText(hWnd, szWork);
+}</code></pre>
+      <p>%1 は %1!s! と同義。</p>
+      <p><a href="https://technet.microsoft.com/ja-jp/library/ms679351">FormatMessage function</a> より。</p>
+    </section>
+    <hr />
+    <footer>
+      <address>2017-09-10更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+    </footer>
+  </body>
+</html>

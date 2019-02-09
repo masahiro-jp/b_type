@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>サーバー情報(B type)</title>
+    <link rel="stylesheet" href="../default.css" type="text/css" />
+  </head>
+  <body>
+    <header>
+      <h1>サーバー情報</h1>
+    </header>
+    <hr />
+    <section>
+      <h1 id="sec1">バックアップについて</h1>
+      <section>
+        <h1 id="sec1">バックアップイメージ</h1>
+        <pre><code>/backup/
+  backup_YYYY-MM-DD/
+    redmine/
+      config/
+        database.yml
+        configuration.yml
+      files/
+        ...
+      public/
+        download/
+          ...
+      redmine_db.dump
+    svn/
+      fs/
+        fs.svndump
+        conf/
+          authz
+          passwd
+          svnserve.conf
+        hooks/
+          ...
+    httpd/
+      conf.d/
+        redmine.conf
+        svn.conf</code></pre>
+      </section>
+      <section>
+        <h1 id="sec1">バックアップスクリプト(/home/kis-user/backup.sh)</h1>
+        <pre><code>#!/bin/bash
+BACKUP_DIR=backup_`date +%Y-%m-%d`
+
+mkdir -p /backup/$BACKUP_DIR
+cd /backup/$BACKUP_DIR
+
+# backup Redmine file
+mkdir -p redmine/config
+mkdir -p redmine/public
+cp -r /var/lib/redmine/files ./redmine/files
+cp -r /var/lib/redmine/public/download ./redmine/public/download
+cp /var/lib/redmine/config/database.yml /var/lib/redmine/config/configuration.yml ./redmine/config
+
+# backup Redmine DB
+PGPASSWORD=redmine_pass /usr/bin/pg_dump -h localhost -U redmine_user -Fc -f ./redmine/redmine_db.dump redmine_db
+
+# svn
+mkdir -p svn/fs
+/usr/bin/svnadmin dump -q /var/lib/svn/repos/fs > ./svn/fs/fs.svndump
+cp -r /var/lib/svn/repos/fs/conf ./svn/fs/conf
+cp -r /var/lib/svn/repos/fs/hooks ./svn/fs/hooks
+
+# httpd
+mkdir -p httpd/conf.d
+cp /etc/httpd/conf.d/redmine.conf /etc/httpd/conf.d/svn.conf ./httpd/conf.d
+
+cd ..
+tar cJf $BACKUP_DIR.tar.xz $BACKUP_DIR --remove-files
+
+# 3世代だけ残してあとは削除する
+if [ `ls -1 backup_????-??-??.tar.xz | wc -l` -gt 3 ]
+then
+    # 降順に並べて先頭2件を比べてみる
+    ls -1r backup_????-??-??.tar.xz | head -2 | xargs diff -q > /dev/null
+    if [ $? -eq 0 ]
+    then
+        # 差がないときは作ったバックアップファイルは削除して古い方の更新日時を新しくする
+        rm $BACKUP_DIR.tar.xz
+        ls -1r backup_????-??-??.tar.xz | head -1 | xargs touch
+    else
+        # 差があるときは一番古いファイルを削除する
+        ls -1 backup_????-??-??.tar.xz | head -1 | xargs rm
+    fi
+fi</code></pre>
+      </section>
+      <section>
+        <h1 id="sec1">cron への登録</h1>
+        <section>
+          <h1>/home/kis-user/crontab ファイルを作成する。</h1>
+          <pre><code># 分 時 日 月 曜日 コマンド
+  00 23 *  *  *   /bin/bash /home/kis-user/backup.sh</code></pre>
+          <p>毎日 23:00 にバックアップを実行する</p>
+        </section>
+        <section>
+          <h1>cron への登録</h1>
+          <pre><code>$ crontab /home/kis-user/crontab</code></pre>
+        </section>
+        <section>
+          <h1>登録されたかどうかの確認</h1>
+          <pre><code>$ crontab -l</code></pre>
+        </section>
+      </section>
+    </section>
+    <section>
+      <h1 id="sec1">PostgreSQL の設定</h1>
+      <p>Redmine のデータ管理には PostgreSQL を使用している。</p>
+      <section>
+        <h1 id="sec1">Redmine から DB に設定するための設定</h1>
+        <p>ファイル名: /var/lib/pgsql/data/pg_hba.conf</p>
+        <pre><code># "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+#host    all             all             127.0.0.1/32            ident
+# IPv6 local connections:
+#host    all             all             ::1/128                 ident
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+#local   replication     postgres                                peer
+#host    replication     postgres        127.0.0.1/32            ident
+#host    replication     postgres        ::1/128                 ident
+
+host    redmine_db     redmine_user        127.0.0.1/32            md5
+host    redmine_db     redmine_user        ::1/128                 md5</code></pre>
+      </section>
+      <section>
+        <h1>DB へのログイン例</h1>
+        <pre><code>$ psql -h localhost redmine_db redmine_user</code></pre>
+        <p>終わるときは ^D で終わる。</p>
+      </section>
+    </section>
+    <section>
+      <h1 id="sec1">Apache の設定</h1>
+      <section>
+        <h1 id="sec1">Apache の設定ファイルその1(/etc/httpd/conf/httpd.conf)</h1>
+        <p>ServerName を変更している</p>
+        <pre><code>#ServerName www.example.com:80
+↓
+ServerName 172.31.52.48</code></pre>
+      </section>
+      <section>
+        <h1 id="sec1">Apache の設定ファイルその2(/etc/httpd/conf.d/svn.conf)</h1>
+        <pre><code>&lt;Location /repos&gt;
+    DAV svn
+    SVNParentPath /var/lib/svn/repos
+&lt;/Location&gt;
+&lt;Location /repos/fs&gt;
+    AuthType Basic
+    AuthName fs
+    AuthUserFile      /var/lib/svn/repos/fs/conf/passwd
+    AuthSVNAccessFile /var/lib/svn/repos/fs/conf/authz
+    Require valid-user
+&lt;/Location&gt;</code></pre>
+      </section>
+      <section>
+        <h1 id="sec1">Apache の設定ファイルその3(/etc/httpd/conf.d/redmine.conf)</h1>
+        <pre><code># Redmineの画像ファイル・CSSファイル等へのアクセスを許可する設定。
+# Apache 2.4のデフォルトではサーバ上の全ファイルへのアクセスが禁止されている。
+&lt;Directory "/var/lib/redmine/public"&gt;
+  Require all granted
+&lt;/Directory&gt;
+
+# Passengerの基本設定。
+# passenger-install-apache2-module --snippet で表示された設定を記述。
+# 環境によって設定値が異なるため以下の5行はそのまま転記せず、必ず
+# passenger-install-apache2-module --snippet で表示されたものを使用すること。
+#
+LoadModule passenger_module /usr/local/lib/ruby/gems/2.3.0/gems/passenger-5.1.2/buildout/apache2/mod_passenger.so
+&lt;IfModule mod_passenger.c&gt;
+  PassengerRoot /usr/local/lib/ruby/gems/2.3.0/gems/passenger-5.1.2
+  PassengerDefaultRuby /usr/local/bin/ruby
+&lt;/IfModule&gt;
+
+# 必要に応じてPassengerのチューニングのための設定を追加（任意）。
+# 詳しくはPhusion Passenger users guide(https://www.phusionpassenger.com/library/config/apache/reference/)参照。
+PassengerMaxPoolSize 20
+PassengerMaxInstancesPerApp 4
+PassengerPoolIdleTime 0
+PassengerStatThrottleRate 10
+
+Header always unset "X-Powered-By"
+Header always unset "X-Runtime"
+
+Alias /redmine /var/lib/redmine/public
+&lt;Location /redmine&gt;
+  PassengerBaseURI /redmine
+  PassengerAppRoot /var/lib/redmine
+&lt;/Location&gt;</code></pre>
+      </section>
+    </section>
+    <section>
+      <h1 id="sec1">Redmine の設定</h1>
+      <section>
+        <h1 id="sec1">/var/lib/redmine/config の下の以下のファイルを編集する。</h1>
+        <section>
+          <h1 id="sec1">DB への接続設定(database.yml)</h1>
+          <pre><code>production:
+  adapter: postgresql
+  database: redmine_db
+  host: localhost
+  username: redmine_user
+  password: redmine_pass
+  encoding: utf8</code></pre>
+        </section>
+        <section>
+          <h1 id="sec1">その他の接続設定(configuration.yml)</h1>
+          <pre><code>production:
+  email_delivery:
+    delivery_method: :smtp
+    smtp_settings:
+      address: "localhost"
+      port: 25
+      domain: 172.31.52.48
+
+  rmagick_font_path: /usr/share/fonts/ipa-pgothic/ipagp.ttf</code></pre>
+        </section>
+      </section>
+      <section>
+        <h1 id="sec1">ログのローテートについて</h1>
+        <p>Redmine は何も設定しないとログを吐き出し続けるようなのでログをローテートさせる。<br />ログ出力自体もログレベルをワーニング以上に絞らせる</p>
+        <section>
+          <h1 id="sec1">ログレベルの設定(/var/lib/redmine/config/environments/production.rb)</h1>
+          <pre><code>Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb
+
+  # Code is not reloaded between requests.
+  config.cache_classes = true
+
+  # Eager load code on boot. This eager loads most of Rails and
+  # your application in memory, allowing both threaded web servers
+  # and those relying on copy on write to perform better.
+  # Rake tasks automatically ignore this option for performance.
+  config.eager_load = true
+
+  # Full error reports are disabled and caching is turned on.
+  config.consider_all_requests_local = false
+  config.action_controller.perform_caching = true
+
+  # Disable delivery errors
+  config.action_mailer.raise_delivery_errors = false
+
+  # No email in production log
+  config.action_mailer.logger = nil
+
+  # Print deprecation notices to the Rails logger.
+  config.active_support.deprecation = :log
+
+  <em>config.log_level = :warn</em>
+end</code></pre>
+        </section>
+        <section>
+          <h1 id="sec1">ログローテートの設定(/etc/logrotate.d/redmine)</h1>
+          <pre><code>/usr/local/redmine/log/*log {
+    missingok           # ファイルが存在しなくてもエラーにしない
+    notifempty
+    copytruncate        # ログを別名でコピーした後、元のファイルの内容を空にする
+    compress            # 古いログを圧縮して保存する
+}</code></pre>
+      <p>ローテート実施のタイミングは毎週日曜の早朝らしい(Redmine公式サイトより)</p>
+        </section>
+      </section>
+      <section>
+        <h1>RedmineはApacheのプロセスが使用するため、何かしら設定ファイルを追加した場合は所有権をApacheに変更すること。</h1>
+        <pre><code># chown -R apache:apache /var/lib/redmine</code></pre>
+      </section>
+    </section>
+    <section>
+      <h1 id="sec1">Subversion の設定</h1>
+      <p>リポジトリの場所 /var/lib/svn/repos/fs</p>
+      <section>
+        <h1 id="sec1">svnserve.conf修正(/var/lib/svn/repos/fs/conf/svnserve.conf)</h1>
+        <p>以下の行を有効にする</p>
+        <pre><code>[general]
+anon-access = none
+auth-access = write
+password-db = passwd
+authz-db = authz</code></pre>
+      </section>
+      <section>
+        <h1 id="sec1">passwd修正(/var/lib/svn/repos/fs/conf/passwd)</h1>
+        <p>使用するユーザーを登録する。その際、htpasswdコマンドを使用してパスワード情報を暗号化する。</p>
+        <pre><code>$ su
+# cd /var/lib/svn/repos/fs/conf
+# htpasswd passwd k-hatakeyama
+New password:
+Re-type new password:
+Adding password for user k-hatakeyama
+#</code></pre>
+      </section>
+      <section>
+        <h1 id="sec1">authz修正(/var/lib/svn/repos/fs/conf/authz)</h1>
+        <p>どのユーザーをどのグループに属させるかを設定する。ディレクトリやファイルに対するアクセス制御も可能。</p>
+        <pre><code>[groups]
+kis-proper = kenichi,okabe,masahiro,shiroshita,h-kuroki,k-hatakeyama
+kis-partner = s-nakano,oi-kitamura,k.soga
+
+[/]
+@kis-proper = rw
+@kis-partner = rw
+redmine = r
+* =</code></pre>
+      </section>
+      <section>
+        <h1 id="sec1">hookの修正(/var/lib/svn/repos/fs/hooks/post-commit)</h1>
+        <p>Microsoft Teams との連動で post-commit に連動するための設定を行う。</p>
+        <pre><code>#!/bin/bash
+
+# リポジトリにコミット後、Microsoft Teams にメッセージを飛ばす
+
+# 文字化け対策
+export LANG=ja_JP.UTF-8
+
+# リポジトリ名(フルパス情報になっているため今回は使わない)
+REPOS="$1"
+
+# リビジョン番号
+REV="$2"
+
+# WebHookUrl
+WEBHOOKURL="https://outlook.office.com/webhook/50fa6b7d-9097-4d71-9406-532d48e93ba6@a7cf33b0-e240-4242-801b-3dcb6348a0a2/Subversion/25f3638e86644b829a2ecae1988e07d1/e320ecda-ea51-41fc-bb7e-6d81967db490"
+
+# コミットユーザー
+AUTHOR=`svnlook author -r $REV $REPOS`
+
+# コミットメッセージ
+COMMIT_MSG=`svnlook log -r $REV $REPOS`
+
+# json データを Teams に飛ばす(クライアント側の commit 動作が遅くなるためバックグランドで飛ばす)
+/usr/bin/curl -X POST -H "Content-Type:application/json" -d "{'revision':$REV,'author':'$AUTHOR','commitLog':'$COMMIT_MSG','reposPath':'fs','commitBrowserUrl':'http://172.31.52.48/redmine/projects/crm1/repository'}" $WEBHOOKURL &amp;</code></pre>
+      </section>
+      <section>
+        <h1 id="sec1">post-commit ファイルには実行権限をつけること。</h1>
+        <pre><code># chmod +x post-commit</code></pre>
+      </section>
+      <section>
+        <h1 id="sec1">SubversionのリポジトリもApacheのプロセスが使用するため、何かしら設定ファイルを追加した場合は所有権をApacheに変更すること。</h1>
+        <pre><code># chown -R apache:apache /var/lib/svn/repos/fs</code></pre>
+      </section>
+    </section>
+    <hr />
+    <address>2017-12-17更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+  </body>
+</html>

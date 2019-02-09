@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>アルゴリズム関係(B type)</title>
+    <link rel="stylesheet" href="../default.css" type="text/css" />
+  </head>
+  <body>
+    <h1>アルゴリズム関係</h1>
+    <hr />
+    <h2 id="sec1">うるう年の判定</h2>
+    <p>規則にのっとってわかりやすく書くとこのパターンになる</p>
+    <pre><code>int IsLeapYear(int year)
+{
+    /* 4で割り切れる年はうるう年 */
+    if (!(year % 4)) {
+
+        /* ただし100で割り切れる年は平年 */
+        if (!(year % 100)) {
+
+            /* ただし400で割り切れる年はうるう年 */
+            if (!(year % 400)) {
+                return 1;
+            }
+
+            return 0;
+        }
+
+        return 1;
+    }
+
+    return 0;
+}</code></pre>
+    <p><a href="http://ja.wikipedia.org/wiki/%E9%96%8F%E5%B9%B4">Wikipedia</a>にのっていたパターン</p>
+    <pre><code>int IsLeapYear(int year)
+{
+    return year%4 == 0 &amp;&amp; year%100 != 0 || year%400 == 0;
+}</code></pre>
+    <p>C言語を使う以上、パフォーマンスを気にするべきで後者のパターンを採用すべきだが、どちらかといえばわかりやすい前者のパターンのほうが好み。とはいえ今やJavaでもVBでも標準で備わっている機能だし、この判定に限っては後者を使うべきなのかもしれない。その下にコメントでも書いておけばいいと思う。</p>
+    <hr />
+    <address>2014-08-03更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+  </body>
+</html>

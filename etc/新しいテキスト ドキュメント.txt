@@ -1,0 +1,23 @@
+/usr/local/src ÇÃâ∫ÇÕÉÜÅ[ÉUÅ[
+
+https://def-4.com/debian_ssd_trim/
+http://weekly.ascii.jp/elem/000/000/386/386225/index-2.html
+
+$ cd
+$ curl -O http://ftp.jaist.ac.jp/pub/apache/apr/apr-1.6.3.tar.gz
+$ tar xvf apr-1.6.3.tar.gz
+$ su -c "mv apr-1.6.3 /usr/local/src"
+$ cd /usr/local/src/apr-1.6.3
+$ ./configure
+$ make
+$ su -c "make install"
+
+$ cd
+$ curl -O https://www.kernel.org/pub/software/scm/git/git-2.16.1.tar.gz
+$ tar xvf git-2.16.1.tar.gz
+$ su -c "mv git-2.16.1 /usr/local/src"
+$ cd /usr/local/src/git-2.16.1
+$ make prefix=/usr/local all
+$ su -c "make prefix=/usr/local install"
+
+curl -O "http://ftp.jaist.ac.jp/pub/apache/{apr/apr-1.6.3.tar.gz,apr/apr-util-1.6.1.tar.gz,httpd/httpd-2.4.29.tar.gz}"

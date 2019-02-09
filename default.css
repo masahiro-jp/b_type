@@ -1,0 +1,26 @@
+@charset "utf-8";
+
+body {
+  font-family: "Lucida Grande", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  background-color: #fdf6e3;
+  color: #657b83;
+}
+
+pre {
+  font-size: 80%;
+  border: 1px solid #7A7A7A;
+  background-color: #eee8d5;
+  color: #586e75;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  padding: 0.5em 1em;
+}
+
+code {
+  font-family: Consolas, "Lucida Grande", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+}
+
+em {
+  color: #dc322f;
+}
