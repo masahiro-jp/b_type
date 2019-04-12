@@ -182,6 +182,21 @@ start /wait msiexec /a "C:\winsdksetup\Installers\X86 Debuggers And Tools-x86_en
       <ul>
         <li>solution01\
           <ul>
+            <li>arm\
+              <ul>
+                <li>Debug\ - armのDebug実行ファイル
+                  <ul>
+                    <li>project01.exe</li>
+                    <li>project01.pdb</li>
+                  </ul>
+                </li>
+                <li>Release\ - armのRelease実行ファイル
+                  <ul>
+                    <li>project01.exe</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
             <li>Debug\ - Win32のDebug実行ファイル
               <ul>
                 <li>project01.exe</li>
@@ -208,8 +223,27 @@ start /wait msiexec /a "C:\winsdksetup\Installers\X86 Debuggers And Tools-x86_en
                 </li>
               </ul>
             </li>
-            <li>project01
+            <li>project01\
               <ul>
+                <li>arm\
+                  <ul>
+                    <li>Debug\ - armのDebug中間ファイル
+                      <ul>
+                        <li>maindlg.obj</li>
+                        <li>project01.obj</li>
+                        <li>project01.pdb</li>
+                        <li>project01.res</li>
+                      </ul>
+                    </li>
+                    <li>Release\ - armのRelease中間ファイル
+                      <ul>
+                        <li>maindlg.obj</li>
+                        <li>project01.obj</li>
+                        <li>project01.res</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
                 <li>Debug\ - Win32のDebug中間ファイル
                   <ul>
                     <li>maindlg.obj</li>
@@ -242,18 +276,19 @@ start /wait msiexec /a "C:\winsdksetup\Installers\X86 Debuggers And Tools-x86_en
                         <li>project01.res</li>
                       </ul>
                     </li>
-                    <li>Makefile - x64用Makefile</li>
-                    <li>env.bat - x64を生成するWin32のコンパイラ</li>
-                    <li>env.lnk</li>
-                    <li>env64.bat - x64を生成するx64のコンパイラ</li>
-                    <li>env64.lnk</li>
                   </ul>
                 </li>
-                <li>Makefile - Win32用Makefile</li>
+                <li>Makefile - Makefile</li>
                 <li>env.bat - Win32を生成するWin32のコンパイラ</li>
                 <li>env.lnk</li>
-                <li>env64.bat - Win32を生成するx64のコンパイラ</li>
+                <li>env32_64.bat - 64bitを生成する32bitのコンパイラ</li>
+                <li>env32_64.lnk</li>
+                <li>env32_arm.bat - armを生成する32bitコンパイラ</li>
+                <li>env32_arm.lnk</li>
+                <li>env64.bat - 64bitを生成する64bitのコンパイラ</li>
                 <li>env64.lnk</li>
+                <li>env64_32.bat - 32bitを生成する64bitのコンパイラ</li>
+                <li>env64_32.lnk</li>
                 <li>icon1.ico</li>
                 <li>maindlg.c</li>
                 <li>resource.h</li>
@@ -272,11 +307,12 @@ start /wait msiexec /a "C:\winsdksetup\Installers\X86 Debuggers And Tools-x86_en
         コンパイラは
         <ul>
           <li>32bitを生成する32bitのコンパイラ(env.bat)</li>
-          <li>32bitを生成する64bitのコンパイラ(env64.bat)</li>
-          <li>64bitを生成する32bitのコンパイラ(x64\env.bat)</li>
-          <li>64bitを生成する64bitのコンパイラ(x64\env64.bat)</li>
+          <li>64bitを生成する32bitのコンパイラ(env32_64.bat)</li>
+          <li>armを生成する32bitのコンパイラ(env32_arm.bat)</li>
+          <li>64bitを生成する64bitのコンパイラ(env64.bat)</li>
+          <li>32bitを生成する64bitのコンパイラ(env64_32.bat)</li>
         </ul>
-        となっているため、4種類のコンパイル環境を用意する(arm系は使わない・・・)。
+        となっているため、5種類のコンパイル環境を用意する(arm系は未確認・・・)。
       </p>
       <p>以下のような環境変数を設定するバッチファイル(env.bat)を作成する(32bit用と64bit用を作る)。</p>
       <pre><code>env.bat
@@ -285,19 +321,84 @@ start /wait msiexec /a "C:\winsdksetup\Installers\X86 Debuggers And Tools-x86_en
 
 rem 32bitを生成する32bitのコンパイラ
 
-set VSINSTALLDIR=%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0
-set WindowsSdkDir=%USERPROFILE%\VC14U7\Windows Kits\10
+set Platform=
+set CommandPromptType=
+
+set VSINSTALLDIR=%USERPROFILE%\VC14U9\Program Files\Microsoft Visual Studio 14.0
+set WindowsSdkDir=%USERPROFILE%\VC14U9\Windows Kits\10
 set VCINSTALLDIR=%VSINSTALLDIR%\VC
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17134.0\ucrt;%WindowsSdkDir%\Include\10.0.17134.0\shared;%WindowsSdkDir%\Include\10.0.17134.0\um
-set LIB=%VCINSTALLDIR%\lib;%WindowsSdkDir%\Lib\10.0.17134.0\um\<em>x86</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17763.0\ucrt;%WindowsSdkDir%\Include\10.0.17763.0\shared;%WindowsSdkDir%\Include\10.0.17763.0\um
+set LIB=%VCINSTALLDIR%\lib;%WindowsSdkDir%\Lib\10.0.17763.0\um\<em>x86</em>
 
-path %VCINSTALLDIR%\redist\onecore\<em>x86</em>\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin;%WindowsSdkDir%\bin\10.0.17134.0\<em>x86</em>
+path %VCINSTALLDIR%\redist\onecore\x86\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin;%WindowsSdkDir%\bin\10.0.17763.0\<em>x86</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
 >cl
 Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>x86</em>
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
+
+>link
+Microsoft (R) Incremental Linker Version 14.00.24234.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+ 使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
+      <pre><code>env32_64.bat
+----
+@echo off
+
+rem 64bitを生成する32bitのコンパイラ
+
+set Platform=<em>x64</em>
+set CommandPromptType=<em>Cross</em>
+
+set VSINSTALLDIR=%USERPROFILE%\VC14U9\Program Files\Microsoft Visual Studio 14.0
+set WindowsSdkDir=%USERPROFILE%\VC14U9\Windows Kits\10
+set VCINSTALLDIR=%VSINSTALLDIR%\VC
+
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17763.0\ucrt;%WindowsSdkDir%\Include\10.0.17763.0\shared;%WindowsSdkDir%\Include\10.0.17763.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>amd64</em>;%WindowsSdkDir%\Lib\10.0.17763.0\um\<em>x64</em>
+
+path %VCINSTALLDIR%\redist\onecore\x86\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin\<em>x86_amd64</em>;%WindowsSdkDir%\bin\10.0.17763.0\<em>x86;%VCINSTALLDIR%\bin</em>
+
+prompt %USERNAME%@%USERDOMAIN%$g
+----
+>cl
+Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>x64</em>
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
+
+>link
+Microsoft (R) Incremental Linker Version 14.00.24234.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+ 使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
+      <pre><code>env32_arm.bat
+----
+@echo off
+
+rem armを生成する32bitコンパイラ
+
+set Platform=<em>ARM</em>
+set CommandPromptType=<em>Cross</em>
+
+set VSINSTALLDIR=%USERPROFILE%\VC14U9\Program Files\Microsoft Visual Studio 14.0
+set WindowsSdkDir=%USERPROFILE%\VC14U9\Windows Kits\10
+set VCINSTALLDIR=%VSINSTALLDIR%\VC
+
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17763.0\ucrt;%WindowsSdkDir%\Include\10.0.17763.0\shared;%WindowsSdkDir%\Include\10.0.17763.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>arm</em>;%WindowsSdkDir%\Lib\10.0.17763.0\um\<em>arm</em>
+
+path %VCINSTALLDIR%\redist\onecore\x86\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin\<em>x86_arm</em>;%WindowsSdkDir%\bin\10.0.17763.0\<em>x86;%VCINSTALLDIR%\bin</em>
+
+prompt %USERNAME%@%USERDOMAIN%$g
+----
+>cl
+Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>ARM</em>
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
@@ -311,73 +412,19 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 ----
 @echo off
 
-rem 32bitを生成する64bitのコンパイラ
-
-set VSINSTALLDIR=%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0
-set WindowsSdkDir=%USERPROFILE%\VC14U7\Windows Kits\10
-set VCINSTALLDIR=%VSINSTALLDIR%\VC
-
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17134.0\ucrt;%WindowsSdkDir%\Include\10.0.17134.0\shared;%WindowsSdkDir%\Include\10.0.17134.0\um
-set LIB=%VCINSTALLDIR%\lib;%WindowsSdkDir%\Lib\10.0.17134.0\um\<em>x86</em>
-
-path %VCINSTALLDIR%\redist\onecore\<em>x64</em>\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin<em>\amd64_x86</em>;%WindowsSdkDir%\bin\10.0.17134.0\<em>x64;%VCINSTALLDIR%\bin\amd64</em>
-
-prompt %USERNAME%@%USERDOMAIN%$g
-----
->cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>x86</em>
-Copyright (C) Microsoft Corporation.  All rights reserved.
-
-使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
-
->link
-Microsoft (R) Incremental Linker Version 14.00.24234.1
-Copyright (C) Microsoft Corporation.  All rights reserved.
-
- 使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
-      <p>32bit用の env64.bat の path に <code>%VCINSTALLDIR%\bin\amd64</code> がついているのは nmake がここにしかないため。</p>
-      <pre><code>x64\env.bat
-----
-@echo off
-
-rem 64bitを生成する32bitのコンパイラ
-
-set VSINSTALLDIR=%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0
-set WindowsSdkDir=%USERPROFILE%\VC14U7\Windows Kits\10
-set VCINSTALLDIR=%VSINSTALLDIR%\VC
-
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17134.0\ucrt;%WindowsSdkDir%\Include\10.0.17134.0\shared;%WindowsSdkDir%\Include\10.0.17134.0\um
-set LIB=%VCINSTALLDIR%\lib<em>\amd64</em>;%WindowsSdkDir%\Lib\10.0.17134.0\um\<em>x64</em>
-
-path %VCINSTALLDIR%\redist\onecore\<em>x86</em>\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin<em>\x86_amd64</em>;%WindowsSdkDir%\bin\10.0.17134.0\<em>x86;%VCINSTALLDIR%\bin</em>
-
-prompt %USERNAME%@%USERDOMAIN%$g
-----
->cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>x64</em>
-Copyright (C) Microsoft Corporation.  All rights reserved.
-
-使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
-
->link
-Microsoft (R) Incremental Linker Version 14.00.24234.1
-Copyright (C) Microsoft Corporation.  All rights reserved.
-
- 使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
-      <pre><code>x64\env64.bat
-----
-@echo off
-
 rem 64bitを生成する64bitのコンパイラ
 
-set VSINSTALLDIR=%USERPROFILE%\VC14U7\Program Files\Microsoft Visual Studio 14.0
-set WindowsSdkDir=%USERPROFILE%\VC14U7\Windows Kits\10
+set Platform=<em>X64</em>
+set CommandPromptType=<em>Native</em>
+
+set VSINSTALLDIR=%USERPROFILE%\VC14U9\Program Files\Microsoft Visual Studio 14.0
+set WindowsSdkDir=%USERPROFILE%\VC14U9\Windows Kits\10
 set VCINSTALLDIR=%VSINSTALLDIR%\VC
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17134.0\ucrt;%WindowsSdkDir%\Include\10.0.17134.0\shared;%WindowsSdkDir%\Include\10.0.17134.0\um
-set LIB=%VCINSTALLDIR%\lib<em>\amd64</em>;%WindowsSdkDir%\Lib\10.0.17134.0\um\<em>x64</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17763.0\ucrt;%WindowsSdkDir%\Include\10.0.17763.0\shared;%WindowsSdkDir%\Include\10.0.17763.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>amd64</em>;%WindowsSdkDir%\Lib\10.0.17763.0\um\<em>x64</em>
 
-path %VCINSTALLDIR%\redist\onecore\<em>x64</em>\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin<em>\amd64</em>;%WindowsSdkDir%\bin\10.0.17134.0\<em>x64</em>
+path %VCINSTALLDIR%\redist\onecore\x64\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin\<em>amd64</em>;%WindowsSdkDir%\bin\10.0.17763.0\<em>x64</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
@@ -392,7 +439,38 @@ Microsoft (R) Incremental Linker Version 14.00.24234.1
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
  使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
-      <p>64bit用の env.bat の path に <code>%VCINSTALLDIR%\bin</code> がついているのは nmake がここにしかないため。</p>
+      <pre><code>env64_32.bat
+----
+@echo off
+
+rem 32bitを生成する64bitのコンパイラ
+
+set Platform=<em>X86</em>
+set CommandPromptType=<em>Cross</em>
+set PreferredToolArchitecture=<em>x64</em>
+
+set VSINSTALLDIR=%USERPROFILE%\VC14U9\Program Files\Microsoft Visual Studio 14.0
+set WindowsSdkDir=%USERPROFILE%\VC14U9\Windows Kits\10
+set VCINSTALLDIR=%VSINSTALLDIR%\VC
+
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.17763.0\ucrt;%WindowsSdkDir%\Include\10.0.17763.0\shared;%WindowsSdkDir%\Include\10.0.17763.0\um
+set LIB=%VCINSTALLDIR%\lib;%WindowsSdkDir%\Lib\10.0.17763.0\um\<em>x86</em>
+
+path %VCINSTALLDIR%\redist\onecore\x64\Microsoft.VC140.CRT;%VCINSTALLDIR%\bin\<em>amd64_x86</em>;%WindowsSdkDir%\bin\10.0.17763.0\<em>x64;%VCINSTALLDIR%\bin\amd64</em>
+
+prompt %USERNAME%@%USERDOMAIN%$g
+----
+>cl
+Microsoft(R) C/C++ Optimizing Compiler Version 19.00.24234.1 for <em>x64</em>
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
+
+>link
+Microsoft (R) Incremental Linker Version 14.00.24234.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+ 使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
       <p>これを呼び出すショートカットを作成する。</p>
       <pre><code>リンク先:%ComSpec% /k env.bat
 作業フォルダ:(空欄にする)</code></pre>
@@ -471,106 +549,74 @@ depends.exe</code></pre>
     </section>
     <section>
       <h2 id="sec11">Makefileの作成</h2>
-      <p>これも32bit用と64bit用を作る(こちらは2種類)。</p>
       <p>exeファイルを作る場合</p>
       <pre><code>Makefile
 ----
-# 32bit用
+LIBS=kernel32.lib user32.lib gdi32.lib comctl32.lib shell32.lib comdlg32.lib libcmt.lib ole32.lib uuid.lib
 
-LIBS=kernel32.lib user32.lib gdi32.lib comctl32.lib shell32.lib comdlg32.lib libcmt.lib
-
-CFLAGS=/nologo /c /TC /W3 /DWIN32 /D_WINDOWS /DUNICODE /D_UNICODE /analyze
+CFLAGS=/nologo /c /Wall /DWIN32_LEAN_AND_MEAN /D_MSVC_LANG /DWINVER=0x0601 /D_WIN32_WINNT=0x0601 /DWIN32 /D_WINDOWS /DUNICODE /D_UNICODE /DSTRICT /analyze
 RFLAGS=/nologo /d WIN32 /d _WINDOWS /d UNICODE /d _UNICODE
-LDFLAGS=/NOLOGO /NODEFAULTLIB /SUBSYSTEM:WINDOWS /INCREMENTAL:NO /MANIFESTDEPENDENCY:&quot;type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='<em>x86</em>' publicKeyToken='6595b64144ccf1df' language='*'&quot;
+LDFLAGS=/NOLOGO /NODEFAULTLIB /SUBSYSTEM:WINDOWS /INCREMENTAL:NO
+!if "$(PLATFORM:X86=)" == ""
+LDFLAGS=$(LDFLAGS) /MANIFESTDEPENDENCY:"type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'"
+!elseif "$(PLATFORM:X64=x64)" == "x64"
+LDFLAGS=$(LDFLAGS) /MANIFESTDEPENDENCY:"type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'"
+!else
+LDFLAGS=$(LDFLAGS) /MANIFESTDEPENDENCY:"type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'"
+!endif
 
-TARGETDIR=<em>..^\</em>
-PROJECTDIR=
+TARGETDIR=..^\
+OBJECTDIR=
+!if "$(PLATFORM:X64=x64)" == "x64"
+TARGETDIR=..\x64^\
+OBJECTDIR=x64^\
+!elseif "$(PLATFORM:ARM=arm)" == "arm"
+TARGETDIR=..\arm^\
+OBJECTDIR=arm^\
+!endif
 
 all: debug release
 
 debug: $(TARGETDIR)Debug\project01.exe
 release: $(TARGETDIR)Release\project01.exe
 
-$(TARGETDIR)Debug\project01.exe: Debug\project01.obj Debug\maindlg.obj Debug\project01.res $(PROJECTDIR)project01.manifest
+$(TARGETDIR)Debug\project01.exe: $(OBJECTDIR)Debug\project01.obj $(OBJECTDIR)Debug\mainwnd.obj $(OBJECTDIR)Debug\aboutdlg.obj $(OBJECTDIR)Debug\project01.res project01.manifest
 	if not exist $(TARGETDIR)Debug mkdir $(TARGETDIR)Debug
-	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:$(PROJECTDIR)project01.manifest /DEBUG /PDBALTPATH:%_PDB% /PDB:$@.pdb /OUT:$@ Debug\project01.obj Debug\maindlg.obj Debug\project01.res $(LIBS)
+	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:project01.manifest /DEBUG /PDBALTPATH:%_PDB% /PDB:$@.pdb /OUT:$@ $(OBJECTDIR)Debug\project01.obj $(OBJECTDIR)Debug\mainwnd.obj $(OBJECTDIR)Debug\aboutdlg.obj $(OBJECTDIR)Debug\project01.res $(LIBS)
 
-Debug\project01.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
-	if not exist Debug mkdir Debug
-	cl $(CFLAGS) /Zi /FdDebug\project01 /Fo$@ /D_DEBUG $(PROJECTDIR)$(@B).c
+$(OBJECTDIR)Debug\project01.obj: $(@B).c resource.h
+	if not exist $(OBJECTDIR)Debug mkdir $(OBJECTDIR)Debug
+	cl $(CFLAGS) /Zi /Fd$(OBJECTDIR)Debug\project01 /Fo$@ /D_DEBUG $(@B).c
 
-Debug\maindlg.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
-	cl $(CFLAGS) /Zi /FdDebug\project01 /Fo$@ /D_DEBUG $(PROJECTDIR)$(@B).c
+$(OBJECTDIR)Debug\mainwnd.obj: $(@B).c aboutdlg.h resource.h
+	cl $(CFLAGS) /Zi /Fd$(OBJECTDIR)Debug\project01 /Fo$@ /D_DEBUG $(@B).c
 
-Debug\project01.res: $(PROJECTDIR)$(@B).rc $(PROJECTDIR)resource.h
-	rc $(RFLAGS) /d _DEBUG /fo $@ $(PROJECTDIR)$(@B).rc
+$(OBJECTDIR)Debug\aboutdlg.obj: $(@B).c $(@B).h resource.h
+	cl $(CFLAGS) /Zi /Fd$(OBJECTDIR)Debug\project01 /Fo$@ /D_DEBUG $(@B).c
 
-$(TARGETDIR)Release\project01.exe: Release\project01.obj Release\maindlg.obj Release\project01.res $(PROJECTDIR)project01.manifest
+$(OBJECTDIR)Debug\project01.res: $(@B).rc resource.h
+	rc $(RFLAGS) /d _DEBUG /fo $@ $(@B).rc
+
+$(TARGETDIR)Release\project01.exe: $(OBJECTDIR)Release\project01.obj $(OBJECTDIR)Release\mainwnd.obj $(OBJECTDIR)Release\aboutdlg.obj $(OBJECTDIR)Release\project01.res project01.manifest
 	if not exist $(TARGETDIR)Release mkdir $(TARGETDIR)Release
-	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:$(PROJECTDIR)project01.manifest /OPT:REF /LTCG /OUT:$@ Release\project01.obj Release\maindlg.obj Release\project01.res $(LIBS)
+	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:project01.manifest /OPT:REF /LTCG /OUT:$@ $(OBJECTDIR)Release\project01.obj $(OBJECTDIR)Release\mainwnd.obj $(OBJECTDIR)Release\aboutdlg.obj $(OBJECTDIR)Release\project01.res $(LIBS)
 
-Release\project01.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
-	if not exist Release mkdir Release
-	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(PROJECTDIR)$(@B).c
+$(OBJECTDIR)Release\project01.obj: $(@B).c resource.h
+	if not exist $(OBJECTDIR)Release mkdir $(OBJECTDIR)Release
+	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(@B).c
 
-Release\maindlg.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
-	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(PROJECTDIR)$(@B).c
+$(OBJECTDIR)Release\mainwnd.obj: $(@B).c aboutdlg.h resource.h
+	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(@B).c
 
-Release\project01.res: $(PROJECTDIR)$(@B).rc $(PROJECTDIR)resource.h
-	rc $(RFLAGS) /d NDEBUG /fo $@ $(PROJECTDIR)$(@B).rc
+$(OBJECTDIR)Release\aboutdlg.obj: $(@B).c $(@B).h resource.h
+	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(@B).c
+
+$(OBJECTDIR)Release\project01.res: $(@B).rc resource.h
+	rc $(RFLAGS) /d NDEBUG /fo $@ $(@B).rc
 
 clean:
-	@for /R Debug %%I in (project01.obj maindlg.obj project01.res project01.pdb project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml) do @if exist %%I del %%I
-	@for /R Release %%I in (project01.obj maindlg.obj project01.res project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml) do @if exist %%I del %%I</code></pre>
-      <pre><code>x64\Makefile
-----
-# 64bit用
-
-LIBS=kernel32.lib user32.lib gdi32.lib comctl32.lib shell32.lib comdlg32.lib libcmt.lib
-
-CFLAGS=/nologo /c /TC /W3 /DWIN32 /D_WINDOWS /DUNICODE /D_UNICODE /analyze
-RFLAGS=/nologo /d WIN32 /d _WINDOWS /d UNICODE /d _UNICODE
-LDFLAGS=/NOLOGO /NODEFAULTLIB /SUBSYSTEM:WINDOWS /INCREMENTAL:NO /MANIFESTDEPENDENCY:&quot;type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='<em>amd64</em>' publicKeyToken='6595b64144ccf1df' language='*'&quot;
-
-TARGETDIR=<em>..\..\x64^\</em>
-PROJECTDIR=<em>..^\</em>
-
-all: debug release
-
-debug: $(TARGETDIR)Debug\project01.exe
-release: $(TARGETDIR)Release\project01.exe
-
-$(TARGETDIR)Debug\project01.exe: Debug\project01.obj Debug\maindlg.obj Debug\project01.res $(PROJECTDIR)project01.manifest
-	if not exist $(TARGETDIR)Debug mkdir $(TARGETDIR)Debug
-	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:$(PROJECTDIR)project01.manifest /DEBUG /PDBALTPATH:%_PDB% /PDB:$@.pdb /OUT:$@ Debug\project01.obj Debug\maindlg.obj Debug\project01.res $(LIBS)
-
-Debug\project01.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
-	if not exist Debug mkdir Debug
-	cl $(CFLAGS) /Zi /FdDebug\project01 /Fo$@ /D_DEBUG $(PROJECTDIR)$(@B).c
-
-Debug\maindlg.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
-	cl $(CFLAGS) /Zi /FdDebug\project01 /Fo$@ /D_DEBUG $(PROJECTDIR)$(@B).c
-
-Debug\project01.res: $(PROJECTDIR)$(@B).rc $(PROJECTDIR)resource.h
-	rc $(RFLAGS) /d _DEBUG /fo $@ $(PROJECTDIR)$(@B).rc
-
-$(TARGETDIR)Release\project01.exe: Release\project01.obj Release\maindlg.obj Release\project01.res $(PROJECTDIR)project01.manifest
-	if not exist $(TARGETDIR)Release mkdir $(TARGETDIR)Release
-	link $(LDFLAGS) /MANIFEST:EMBED /MANIFESTINPUT:$(PROJECTDIR)project01.manifest /OPT:REF /LTCG /OUT:$@ Release\project01.obj Release\maindlg.obj Release\project01.res $(LIBS)
-
-Release\project01.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
-	if not exist Release mkdir Release
-	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(PROJECTDIR)$(@B).c
-
-Release\maindlg.obj: $(PROJECTDIR)$(@B).c $(PROJECTDIR)resource.h
-	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(PROJECTDIR)$(@B).c
-
-Release\project01.res: $(PROJECTDIR)$(@B).rc $(PROJECTDIR)resource.h
-	rc $(RFLAGS) /d NDEBUG /fo $@ $(PROJECTDIR)$(@B).rc
-
-clean:
-	@for /R Debug %%I in (project01.obj maindlg.obj project01.res project01.pdb project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml) do @if exist %%I del %%I
-	@for /R Release %%I in (project01.obj maindlg.obj project01.res project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml) do @if exist %%I del %%I</code></pre>
+	@for /r $(OBJECTDIR)Debug %%I in (project01.obj mainwnd.obj aboutdlg.obj project01.res project01.pdb project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml aboutdlg.nativecodeanalysis.xml) do @if exist %%I del "%%I"
+	@for /r $(OBJECTDIR)Release %%I in (project01.obj mainwnd.obj aboutdlg.obj project01.res project01.nativecodeanalysis.xml mainwnd.nativecodeanalysis.xml aboutdlg.nativecodeanalysis.xml) do @if exist %%I del "%%I"</code></pre>
       <p>cl のオプションメモ</p>
       <ul>
         <li>Debug
@@ -647,6 +693,6 @@ clean:
 &lt;/assembly&gt;</code></pre>
     </section>
     <hr />
-    <address>2018-06-17更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+    <address>2019-04-10更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
   </body>
 </html>
