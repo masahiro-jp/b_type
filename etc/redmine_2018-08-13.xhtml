@@ -21,15 +21,14 @@
           </thead>
           <tbody>
             <tr><td>OS</td><td>CentOS 7.4</td></tr>
-            <tr><td>Web Server</td><td>Apache 2.4.39(Railsの実行にはPassengerを使用)</td></tr>
-            <tr><td>Version Control</td><td>Subversion 1.12.0</td></tr>
-            <tr><td>Version Control</td><td>Git 2.21.0</td></tr>
-            <tr><td>Database</td><td>PostgreSQL 11.3</td></tr>
-            <tr><td>Ruby</td><td>Ruby 2.6.3</td></tr>
-            <tr><td>Redmine</td><td>Redmine 4.0.3</td></tr>
+            <tr><td>Web Server</td><td>Apache 2.4.34(Railsの実行にはPassengerを使用)</td></tr>
+            <tr><td>Version Control</td><td>Subversion 1.10.2</td></tr>
+            <tr><td>Database</td><td>PostgreSQL 10.5</td></tr>
+            <tr><td>Ruby</td><td>Ruby 2.4.4</td></tr>
+            <tr><td>Redmine</td><td>Redmine 3.4.6</td></tr>
           </tbody>
         </table>
-        <p>前バージョン<a href="redmine_2017-09-10.xhtml">redmine_2017-09-10</a>, <a href="redmine_2018-08-13.xhtml">redmine_2018-08-13</a></p>
+        <p>前バージョン<a href="redmine_2017-09-10.xhtml">redmine_2017-09-10</a></p>
         <p>作成されるOSユーザー</p>
         <table>
           <thead>
@@ -74,38 +73,38 @@ dhcpv6-client http ssh</code></pre>
         <section>
           <h1>開発ツール(Cコンパイラ等)をインストールする。</h1>
 <pre><code>$ su
-# yum install gcc-c++ perl lynx flex bzip2 patch readline-devel zlib-devel curl-devel libyaml-devel libffi-devel expat-devel pcre-devel systemd-devel gdbm-devel bison ImageMagick ImageMagick-devel ipa-pgothic-fonts autoconf</code></pre>
+# yum install yum install gcc-c++ perl lynx flex bzip2 patch readline-devel zlib-devel curl-devel libyaml-devel libffi-devel expat-devel pcre-devel systemd-devel gdbm-devel bison ImageMagick ImageMagick-devel ipa-pgothic-fonts</code></pre>
         </section>
       </section>
       <section>
         <h1>OpenSSLのインストール</h1>
 <pre><code>$ cd
-$ curl -O https://www.openssl.org/source/openssl-1.1.1b.tar.gz
-$ tar xf openssl-1.1.1b.tar.gz
-$ su -c 'mv openssl-1.1.1b /usr/local/src'
-$ cd /usr/local/src/openssl-1.1.1b
+$ curl -O https://www.openssl.org/source/openssl-1.1.1.tar.gz
+$ tar xvf openssl-1.1.1.tar.gz
+$ su -c 'mv openssl-1.1.1 /usr/local/src'
+$ cd /usr/local/src/openssl-1.1.1
 $ ./config
 $ make
-$ su -c 'make install'
-$ su -c 'echo "/usr/local/lib64" > /etc/ld.so.conf.d/lib64.conf'
-$ su -c 'ldconfig'</code></pre>
+$ su -c 'make install'</code></pre>
       </section>
       <section>
         <h1>Apacheのインストール</h1>
         <section>
           <h1>Apacheのインストール</h1>
 <pre><code>$ cd
-$ curl -O "http://ftp.jaist.ac.jp/pub/apache/{apr/apr-1.6.5.tar.gz,apr/apr-util-1.6.1.tar.gz,httpd/httpd-2.4.39.tar.gz}"
-$ tar xf httpd-2.4.39.tar.gz
-$ su -c 'mv httpd-2.4.39 /usr/local/src'
+$ curl -O http://ftp.jaist.ac.jp/pub/apache/httpd/httpd-2.4.35.tar.gz
+$ tar xvf httpd-2.4.35.tar.gz
+$ su -c 'mv httpd-2.4.35 /usr/local/src'
 
-$ tar xf apr-1.6.5.tar.gz
-$ mv apr-1.6.5 /usr/local/src/httpd-2.4.39/srclib/apr
+$ curl -O http://ftp.jaist.ac.jp/pub/apache/apr/apr-1.6.5.tar.gz
+$ tar xvf apr-1.6.5.tar.gz
+$ mv apr-1.6.5 /usr/local/src/httpd-2.4.35/srclib/apr
 
-$ tar xf apr-util-1.6.1.tar.gz
-$ mv apr-util-1.6.1 /usr/local/src/httpd-2.4.39/srclib/apr-util
+$ curl -O http://ftp.jaist.ac.jp/pub/apache/apr/apr-util-1.6.1.tar.gz
+$ tar xvf apr-util-1.6.1.tar.gz
+$ mv apr-util-1.6.1 /usr/local/src/httpd-2.4.35/srclib/apr-util
 
-$ cd /usr/local/src/httpd-2.4.39
+$ cd /usr/local/src/httpd-2.4.35
 $ ./configure --with-included-apr --enable-so --enable-ssl --enable-rewrite --enable-headers --with-ssl=/usr/local/bin
 $ make
 $ su -c 'make install'</code></pre>
@@ -125,11 +124,11 @@ Group apache
 # chown -R apache:apache /usr/local/apache2</code></pre>
           <p>自動起動の設定</p>
 <pre><code>$ su
-# mkdir -p /usr/local/lib/systemd/system
+# vi /usr/lib/systemd/system/httpd.service または
 # vi /usr/local/lib/systemd/system/httpd.service</code></pre>
           <p>以下の内容で作成する。</p>
 <pre><code>[Unit]
-Description=httpd-2.4.39 daemon
+Description=httpd-2.4.34 daemon
 After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
@@ -149,10 +148,10 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service t
         <section>
           <h1>sqliteのインストール</h1>
 <pre><code>$ cd
-$ curl -O https://www.sqlite.org/2019/sqlite-autoconf-3280000.tar.gz
-$ tar xf sqlite-autoconf-3280000.tar.gz
-$ su -c 'mv sqlite-autoconf-3280000 /usr/local/src'
-$ cd /usr/local/src/sqlite-autoconf-3280000
+$ curl -O https://www.sqlite.org/2018/sqlite-autoconf-3240000.tar.gz
+$ tar xvf sqlite-autoconf-3240000.tar.gz
+$ su -c 'mv sqlite-autoconf-3240000 /usr/local/src'
+$ cd /usr/local/src/sqlite-autoconf-3240000
 $ ./configure
 $ make
 $ su -c 'make install'</code></pre>
@@ -160,10 +159,10 @@ $ su -c 'make install'</code></pre>
         <section>
           <h1>sconsのインストール</h1>
 <pre><code>$ cd
-$ curl -O https://jaist.dl.sourceforge.net/project/scons/scons/3.0.5/scons-3.0.5.tar.gz
-$ tar xf scons-3.0.5.tar.gz
-$ su -c 'mv scons-3.0.5 /usr/local/src'
-$ cd /usr/local/src/scons-3.0.5
+$ curl -O https://jaist.dl.sourceforge.net/project/scons/scons/3.0.1/scons-3.0.1.tar.gz
+$ tar xvf scons-3.0.1.tar.gz
+$ su -c 'mv scons-3.0.1 /usr/local/src'
+$ cd /usr/local/src/scons-3.0.1
 $ su -c 'python setup.py install'</code></pre>
         </section>
         <section>
@@ -173,17 +172,17 @@ $ curl -O http://archive.apache.org/dist/serf/serf-1.3.9.tar.bz2
 $ tar xjf serf-1.3.9.tar.bz2
 $ su -c 'mv serf-1.3.9 /usr/local/src'
 $ cd /usr/local/src/serf-1.3.9
-$ scons APR=/usr/local/apache2 APU=/usr/local/apache2 OPENSSL=/usr/local/bin
+$ scons APR=/usr/local/apr APU=/usr/local/apr OPENSSL=/usr/bin
 $ su -c 'scons install'</code></pre>
         </section>
         <section>
           <h1>subversionのインストール</h1>
 <pre><code>$ cd
-$ curl -O http://ftp.riken.jp/net/apache/subversion/subversion-1.12.0.tar.gz
-$ tar xf subversion-1.12.0.tar.gz
-$ su -c 'mv subversion-1.12.0 /usr/local/src'
-$ cd /usr/local/src/subversion-1.12.0
- $ ./configure --with-apr=/usr/local/apache2 --with-apr-util=/usr/local/apache2 --with-serf=/usr/local --with-apxs=/usr/local/apache2/bin/apxs --with-lz4=internal --with-utf8proc=internal
+$ curl -O http://ftp.riken.jp/net/apache/subversion/subversion-1.10.2.tar.gz
+$ tar xvf subversion-1.10.2.tar.gz
+$ su -c 'mv subversion-1.10.2 /usr/local/src'
+$ cd /usr/local/src/subversion-1.10.2
+$ ./configure --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr --with-serf=/usr/local/ --with-apxs=/usr/local/apache2/bin/apxs --with-lz4=internal --with-utf8proc=internal
 $ make
 $ su -c 'make install'</code></pre>
         </section>
@@ -218,26 +217,14 @@ LoadModule dav_module modules/mod_dav.so</code></pre>
         </section>
       </section>
       <section>
-        <h1>Gitのインストール</h1>
-<pre><code>$ cd
-$ curl https://codeload.github.com/git/git/tar.gz/v2.21.0 -o git-2.21.0.tar.gz
-$ tar xf git-2.21.0.tar.gz
-$ su -c 'mv git-2.21.0 /usr/local/src'
-$ cd /usr/local/src/git-2.21.0
-$ make configure
-$ ./configure --prefix=/usr/local
-$ make
-$ su -c 'make install'</code></pre>
-      </section>
-      <section>
         <h1>PostgreSQLのインストール</h1>
         <section>
           <h1>PostgreSQLをインストールする。</h1>
 <pre><code>$ cd
-$ curl -O https://ftp.postgresql.org/pub/source/v11.3/postgresql-11.3.tar.gz
-$ tar xf postgresql-11.3.tar.gz
-$ su -c 'mv postgresql-11.3 /usr/local/src'
-$ cd /usr/local/src/postgresql-11.3
+$ curl -O https://ftp.postgresql.org/pub/source/v10.5/postgresql-10.5.tar.gz
+$ tar xvf postgresql-10.5.tar.gz
+$ su -c 'mv postgresql-10.5 /usr/local/src'
+$ cd /usr/local/src/postgresql-10.5
 $ ./configure --with-openssl --with-systemd
 $ make
 $ su -c 'make install'</code></pre>
@@ -292,20 +279,20 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/postgres.servic
 <tr><th>Redmineのバージョン</th><th>Rubyのバージョン</th><th>今回使用する組み合わせ</th></tr>
 </thead>
 <tbody>
-<tr><td>4.0.x</td><td>2.2.2, 2.3, 2.4, 2.5, 2.6</td><td>←</td></tr>
-<tr><td>3.4.x</td><td>1.9.3, 2.0.0, 2.1, 2.2, 2.3, 2.4</td><td>　</td></tr>
+<tr><td>4.0.x</td><td>2.2.2, 2.3, 2.4</td><td>　</td></tr>
+<tr><td>3.4.x</td><td>1.9.3, 2.0.0, 2.1, 2.2, 2.3, 2.4</td><td>←</td></tr>
 <tr><td>3.3.x</td><td>1.9.3, 2.0.0, 2.1, 2.2, 2.3</td><td>　</td></tr>
 <tr><td>3.2.x</td><td>1.9.3, 2.0.0, 2.1, 2.2</td><td>　</td></tr>
 </tbody>
 </table>
-Ruby安定版は2.6.3, 2.5.5</p>
+Ruby安定版は2.5.1, 2.4.4</p>
         <section>
           <h1>Rubyをインストールする。</h1>
 <pre><code>$ cd
-$ curl -O https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.3.tar.gz
-$ tar xf ruby-2.6.3.tar.gz
-$ su -c 'mv ruby-2.6.3 /usr/local/src'
-$ cd /usr/local/src/ruby-2.6.3
+$ curl -O https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.4.tar.gz
+$ tar xvf ruby-2.4.4.tar.gz
+$ su -c 'mv ruby-2.4.4 /usr/local/src'
+$ cd /usr/local/src/ruby-2.3.4
 $ ./configure --disable-install-doc
 $ make
 $ su -c 'make install'</code></pre>
@@ -313,25 +300,25 @@ $ su -c 'make install'</code></pre>
         <section>
           <h1>bundlerをインストールする。</h1>
 <pre><code>$ su
-# gem install bundler</code></pre>
+# gem install bundler --no-rdoc --no-ri</code></pre>
         </section>
         <section>
           <h1>Passengerをインストールする。</h1>
 <pre><code>$ su
-# gem install passenger</code></pre>
+# gem install passenger --no-rdoc --no-ri</code></pre>
         </section>
         <section>
           <h1>PassengerのApache用モジュールをインストールする。</h1>
 <pre><code>$ su
-# passenger-install-apache2-module -a --apxs2-path /usr/local/apache2/bin/apxs --apr-config-path /usr/local/apache2/bin/apr-1-config --languages ruby</code></pre>
+# passenger-install-apache2-module -a --apxs2-path /usr/local/apache2/bin/apxs --apr-config-path /usr/local/apr/bin/apr-1-config --languages ruby</code></pre>
         </section>
         <section>
           <h1>Apache用設定内容の確認</h1>
 <pre><code>$ su
 # passenger-install-apache2-module --snippet
-LoadModule passenger_module /usr/local/lib/ruby/gems/2.6.0/gems/passenger-6.0.2/buildout/apache2/mod_passenger.so
+LoadModule passenger_module /usr/local/lib/ruby/gems/2.4.0/gems/passenger-5.3.4/buildout/apache2/mod_passenger.so
 &lt;IfModule mod_passenger.c&gt;
-  PassengerRoot /usr/local/lib/ruby/gems/2.6.0/gems/passenger-6.0.2
+  PassengerRoot /usr/local/lib/ruby/gems/2.4.0/gems/passenger-5.3.4
   PassengerDefaultRuby /usr/local/bin/ruby
 &lt;/IfModule&gt;</code></pre>
 <pre><code># vi /usr/local/apache2/conf/extra/redmine.conf</code></pre>
@@ -340,9 +327,9 @@ LoadModule passenger_module /usr/local/lib/ruby/gems/2.6.0/gems/passenger-6.0.2/
 # 環境によって設定値が異なるため以下の3行はそのまま転記せず、必ず
 # passenger-install-apache2-module --snippet で表示されたものを使用すること。
 #
-LoadModule passenger_module /usr/local/lib/ruby/gems/2.6.0/gems/passenger-6.0.2/buildout/apache2/mod_passenger.so
+LoadModule passenger_module /usr/local/lib/ruby/gems/2.4.0/gems/passenger-5.3.4/buildout/apache2/mod_passenger.so
 &lt;IfModule mod_passenger.c&gt;
-  PassengerRoot /usr/local/lib/ruby/gems/2.6.0/gems/passenger-6.0.2
+  PassengerRoot /usr/local/lib/ruby/gems/2.4.0/gems/passenger-5.3.4
   PassengerDefaultRuby /usr/local/bin/ruby
 &lt;/IfModule&gt;
 
@@ -404,9 +391,10 @@ $ createdb -E UTF-8 -l ja_JP.UTF-8 -O redmine_a_user -T template0 redmine_a_db</
       <section>
         <h1>Redmineのダウンロード</h1>
 <pre><code>$ cd
-$ curl -O http://www.redmine.org/releases/redmine-4.0.3.tar.gz
-$ tar xf redmine-4.0.3.tar.gz
-$ su -c 'mv redmine-4.0.3 /var/lib/redmine_a'</code></pre>
+$ curl -O http://www.redmine.org/releases/redmine-3.4.6.tar.gz
+$ tar xvf redmine-3.4.6.tar.gz
+$ mv redmine-3.4.6 redmine_a
+$ su -c 'mv redmine_a /var/lib'</code></pre>
       </section>
       <section>
         <h1>データベースへの接続設定</h1>
@@ -475,7 +463,7 @@ Alias /redmine_a /var/lib/redmine_a/public
     </section>
     <hr />
     <footer>
-      <address>2019-05-21更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+      <address>2018-08-13更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
     </footer>
   </body>
 </html>
