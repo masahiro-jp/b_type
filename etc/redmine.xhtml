@@ -249,7 +249,7 @@ $ su -c 'make install'</code></pre>
           <p>設定ファイル git.conf を作成する。</p>
 <pre><code>$ su
 # vi /usr/local/apache2/conf/extra/git.conf</code></pre>
-<pre><code>ScriptAlias /git/ /usr/lib/git-core/git-http-backend/
+<pre><code>ScriptAlias /git/ /usr/local/libexec/git-core/git-http-backend/
 SetEnv GIT_PROJECT_ROOT /var/lib/git/repos
 SetEnv GIT_HTTP_EXPORT_ALL
 
@@ -263,6 +263,10 @@ SetEnv GIT_HTTP_EXPORT_ALL
 <pre><code>$ su
 # vi /usr/local/apache2/conf/httpd.conf</code></pre>
 <pre><code>Include conf/extra/git.conf</code></pre>
+          <p>httpd.confのcgid_moduleのコメントを外す</p>
+<pre><code>#LoadModule cgid_module modules/mod_cgid.so
+↓
+LoadModule cgid_module modules/mod_cgid.so</code></pre>
         </section>
       </section>
       <section>
