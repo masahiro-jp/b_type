@@ -20,7 +20,7 @@
             <tr><th>ソフトウェア</th><th>バージョン</th></tr>
           </thead>
           <tbody>
-            <tr><td>OS</td><td>CentOS 7.4</td></tr>
+            <tr><td>OS</td><td>CentOS 7.6.1810</td></tr>
             <tr><td>Web Server</td><td>Apache 2.4.39(Railsの実行にはPassengerを使用)</td></tr>
             <tr><td>Version Control</td><td>Subversion 1.12.0</td></tr>
             <tr><td>Version Control</td><td>Git 2.21.0</td></tr>
@@ -183,9 +183,17 @@ $ curl -O http://ftp.riken.jp/net/apache/subversion/subversion-1.12.0.tar.gz
 $ tar xf subversion-1.12.0.tar.gz
 $ su -c 'mv subversion-1.12.0 /usr/local/src'
 $ cd /usr/local/src/subversion-1.12.0
- $ ./configure --with-apr=/usr/local/apache2 --with-apr-util=/usr/local/apache2 --with-serf=/usr/local --with-apxs=/usr/local/apache2/bin/apxs --with-lz4=internal --with-utf8proc=internal
+$ ./configure --with-apr=/usr/local/apache2 --with-apr-util=/usr/local/apache2 --with-serf=/usr/local --with-apxs=/usr/local/apache2/bin/apxs --with-lz4=internal --with-utf8proc=internal
 $ make
 $ su -c 'make install'</code></pre>
+        </section>
+        <section>
+          <h1>リポジトリ作成</h1>
+<pre><code>$ su
+# mkdir -p /var/lib/svn/repos
+# cd /var/lib/svn/repos
+# svnadmin create repo1
+# chown apache:apache repo1</code></pre>
         </section>
         <section>
           <h1>ApacheからSubversionが使用できるようにする(認証はdigestを使用する)。</h1>
@@ -228,6 +236,34 @@ $ make configure
 $ ./configure
 $ make
 $ su -c 'make install'</code></pre>
+        <section>
+          <h1>リポジトリ作成</h1>
+<pre><code>$ su
+# mkdir -p /var/lib/git/repos
+# cd /var/lib/git/repos
+# git init --bare --shared repo1.git
+# chown apache:apache repo1.git</code></pre>
+        </section>
+        <section>
+          <h1>ApacheからGitが使用できるようにする(認証はdigestを使用する)。</h1>
+          <p>設定ファイル git.conf を作成する。</p>
+<pre><code>$ su
+# vi /usr/local/apache2/conf/extra/git.conf</code></pre>
+<pre><code>ScriptAlias /git/ /usr/lib/git-core/git-http-backend/
+SetEnv GIT_PROJECT_ROOT /var/lib/git/repos
+SetEnv GIT_HTTP_EXPORT_ALL
+
+&lt;LocationMatch "^/git"&gt;
+    AuthType Digest
+    AuthName "git repository"
+    Require valid-user
+    AuthUserFile /var/lib/git/repos/htpasswd
+&lt;/LocationMatch&gt;</code></pre>
+          <p>httpd.confにgit.confを追記する</p>
+<pre><code>$ su
+# vi /usr/local/apache2/conf/httpd.conf</code></pre>
+<pre><code>Include conf/extra/git.conf</code></pre>
+        </section>
       </section>
       <section>
         <h1>PostgreSQLのインストール</h1>
@@ -334,7 +370,7 @@ LoadModule passenger_module /usr/local/lib/ruby/gems/2.6.0/gems/passenger-6.0.2/
   PassengerRoot /usr/local/lib/ruby/gems/2.6.0/gems/passenger-6.0.2
   PassengerDefaultRuby /usr/local/bin/ruby
 &lt;/IfModule&gt;</code></pre>
-<pre><code># vi /usr/local/apache2/conf/extra/redmine.conf</code></pre>
+<pre><code># vi /usr/local/apache2/conf/extra/passenger.conf</code></pre>
 <pre><code># Passengerの基本設定。
 # passenger-install-apache2-module --snippet で表示された設定を記述。
 # 環境によって設定値が異なるため以下の3行はそのまま転記せず、必ず
@@ -344,20 +380,10 @@ LoadModule passenger_module /usr/local/lib/ruby/gems/2.6.0/gems/passenger-6.0.2/
 &lt;IfModule mod_passenger.c&gt;
   PassengerRoot /usr/local/lib/ruby/gems/2.6.0/gems/passenger-6.0.2
   PassengerDefaultRuby /usr/local/bin/ruby
-&lt;/IfModule&gt;
-
-# 必要に応じてPassengerのチューニングのための設定を追加（任意）。
-# 詳しくはPhusion Passenger users guide(https://www.phusionpassenger.com/library/config/apache/reference/)参照。
-PassengerMaxPoolSize 20
-PassengerMaxInstancesPerApp 4
-PassengerPoolIdleTime 864000
-PassengerStatThrottleRate 10
-
-Header always unset "X-Powered-By"
-Header always unset "X-Runtime"</code></pre>
-<pre><code>chown apache:apache /usr/local/apache2/conf/extra/redmine.conf</code></pre>
+&lt;/IfModule&gt;</code></pre>
+<pre><code>chown apache:apache /usr/local/apache2/conf/extra/passenger.conf</code></pre>
 <pre><code># vi /usr/local/apache2/conf/httpd.conf</code></pre>
-<pre><code>Include conf/extra/redmine.conf</code></pre>
+<pre><code>Include conf/extra/passenger.conf</code></pre>
         </section>
       </section>
     </section>
@@ -472,6 +498,80 @@ Alias /redmine_a /var/lib/redmine_a/public
 <pre><code># /usr/local/apache2/bin/apachectl configtest
 # systemctl restart httpd</code></pre>
       </section>
+    </section>
+    <section>
+      <h1>バックアップについて</h1>
+      <p>バックアップ対象は物理的なファイルとDBダンプ、リポジトリダンプ。</p>
+      <p>物理的な対象ファイルの位置(*が付いているファイル/ディレクトリが対象)</p>
+<pre><code>/
+  var/
+    lib/
+      redmine_a/
+        files/ *
+        public/
+          download/ *
+        config/
+          database.yml *
+          configuration.yml *
+      svn/
+        repos/
+          repo1/
+            conf/ *
+            hooks/
+              post-commit *
+      git/
+        repos/
+          repo1/ (調査中)
+      pgsql/
+        data/
+          pg_hba.conf *
+  usr/
+    local/
+      apache2/
+        conf/
+          httpd.conf *
+          extra/
+            svn.conf *
+            git.conf *
+            passenger.conf *
+            redmine.conf *
+      lib/
+        systemd/
+          system/
+            httpd.service *
+            postgres.service *</code></pre>
+      <p>DBダンプ</p>
+      <p>以下のコマンドを実行</p>
+<pre><code>PGPASSWORD=redmine_a_pass /usr/bin/pg_dump -h localhost -U redmine_a_user -f ./redmine_a_db.sqlc redmine_a_db</code></pre>
+      <p>リポジトリをダンプ</p>
+      <p>以下のコマンドを実行</p>
+<pre><code>/usr/bin/svnadmin dump -q /var/lib/svn/repos/fs &gt; ./fs.svndump</code></pre>
+      <p>バックアップイメージ(考え中)</p>
+<pre><code>/backup/
+  backup_YYYY-MM-DD/
+    redmine/
+      config/
+        database.yml
+        configuration.yml
+      files/
+        ..
+       public/
+         download/
+          ..
+     redmine_a_db.sqlc
+    svn/
+      fs/
+        fs.svndump
+        conf/
+          authz
+          passwd
+          svnserve.conf
+        hooks/
+          ..
+    httpd/
+      conf.d/
+        redmine.conf
+        svn.conf</code></pre>
     </section>
     <hr />
     <footer>
