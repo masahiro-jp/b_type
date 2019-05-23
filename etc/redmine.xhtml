@@ -193,7 +193,7 @@ $ su -c 'make install'</code></pre>
 # mkdir -p /var/lib/svn/repos
 # cd /var/lib/svn/repos
 # svnadmin create repo1
-# chown apache:apache repo1</code></pre>
+# chown -R apache:apache repo1</code></pre>
         </section>
         <section>
           <h1>ApacheからSubversionが使用できるようにする(認証はdigestを使用する)。</h1>
@@ -223,6 +223,9 @@ LoadModule authz_svn_module /usr/local/libexec/mod_authz_svn.so
 ↓
 LoadModule auth_digest_module modules/mod_auth_digest.so
 LoadModule dav_module modules/mod_dav.so</code></pre>
+          <p>パスワードファイルを作成する</p>
+<pre><code>$ su
+# /usr/local/apache2/bin/htdigest -c /var/lib/svn/repos/repo1/conf/passwd "Repo1" user1</code></pre>
         </section>
       </section>
       <section>
@@ -242,7 +245,7 @@ $ su -c 'make install'</code></pre>
 # mkdir -p /var/lib/git/repos
 # cd /var/lib/git/repos
 # git init --bare --shared repo1.git
-# chown apache:apache repo1.git</code></pre>
+# chown -R apache:apache repo1.git</code></pre>
         </section>
         <section>
           <h1>ApacheからGitが使用できるようにする(認証はdigestを使用する)。</h1>
@@ -257,7 +260,7 @@ SetEnv GIT_HTTP_EXPORT_ALL
     AuthType Digest
     AuthName "git repository"
     Require valid-user
-    AuthUserFile /var/lib/git/repos/htpasswd
+    AuthUserFile /var/lib/git/repos/passwd
 &lt;/LocationMatch&gt;</code></pre>
           <p>httpd.confにgit.confを追記する</p>
 <pre><code>$ su
@@ -267,6 +270,9 @@ SetEnv GIT_HTTP_EXPORT_ALL
 <pre><code>#LoadModule cgid_module modules/mod_cgid.so
 ↓
 LoadModule cgid_module modules/mod_cgid.so</code></pre>
+          <p>パスワードファイルを作成する</p>
+<pre><code>$ su
+# /usr/local/apache2/bin/htdigest -c /var/lib/git/repos/passwd "git repository" user1</code></pre>
         </section>
       </section>
       <section>
@@ -485,7 +491,7 @@ $ bundle exec rake generate_secret_token</code></pre>
       <section>
         <h1>Apacheへの設定追加およびApacheの再起動</h1>
 <pre><code>$ su
-# vi /usr/local/apache2/conf/extra/redmine.conf</code></pre>
+# vi /usr/local/apache2/conf/extra/redmine_a.conf</code></pre>
 <pre><code># Redmineの画像ファイル・CSSファイル等へのアクセスを許可する設定。
 # Apache 2.4のデフォルトではサーバ上の全ファイルへのアクセスが禁止されている。
 &lt;Directory "/var/lib/redmine_a/public"&gt;
@@ -498,6 +504,10 @@ Alias /redmine_a /var/lib/redmine_a/public
   PassengerBaseURI /redmine_a
   PassengerAppRoot /var/lib/redmine_a
 &lt;/Location&gt;</code></pre>
+        <p>httpd.confにredmine_a.confを追記する</p>
+<pre><code>$ su
+# vi /usr/local/apache2/conf/httpd.conf</code></pre>
+<pre><code>Include conf/extra/redmine_a.conf</code></pre>
         <p>Apache再起動</p>
 <pre><code># /usr/local/apache2/bin/apachectl configtest
 # systemctl restart httpd</code></pre>
@@ -525,7 +535,8 @@ Alias /redmine_a /var/lib/redmine_a/public
               post-commit *
       git/
         repos/
-          repo1/ (調査中)
+          passwd *
+          repo1.git/ *(調査中)
       pgsql/
         data/
           pg_hba.conf *
@@ -535,10 +546,10 @@ Alias /redmine_a /var/lib/redmine_a/public
         conf/
           httpd.conf *
           extra/
-            svn.conf *
             git.conf *
             passenger.conf *
-            redmine.conf *
+            redmine_a.conf *
+            svn.conf *
       lib/
         systemd/
           system/
@@ -546,10 +557,10 @@ Alias /redmine_a /var/lib/redmine_a/public
             postgres.service *</code></pre>
       <p>DBダンプ</p>
       <p>以下のコマンドを実行</p>
-<pre><code>PGPASSWORD=redmine_a_pass /usr/bin/pg_dump -h localhost -U redmine_a_user -f ./redmine_a_db.sqlc redmine_a_db</code></pre>
+<pre><code>PGPASSWORD=redmine_a_pass /usr/local/pgsql/bin/pg_dump -h localhost -U redmine_a_user -f ./redmine_a_db.sqlc redmine_a_db</code></pre>
       <p>リポジトリをダンプ</p>
       <p>以下のコマンドを実行</p>
-<pre><code>/usr/bin/svnadmin dump -q /var/lib/svn/repos/fs &gt; ./fs.svndump</code></pre>
+<pre><code>/usr/local/bin/svnadmin dump -q /var/lib/svn/repos/repo1 &gt; ./repo1.svndump</code></pre>
       <p>バックアップイメージ(考え中)</p>
 <pre><code>/backup/
   backup_YYYY-MM-DD/
@@ -564,8 +575,8 @@ Alias /redmine_a /var/lib/redmine_a/public
           ..
      redmine_a_db.sqlc
     svn/
-      fs/
-        fs.svndump
+      repo1/
+        repo1.svndump
         conf/
           authz
           passwd
@@ -573,13 +584,16 @@ Alias /redmine_a /var/lib/redmine_a/public
         hooks/
           ..
     httpd/
-      conf.d/
-        redmine.conf
+      httpd.conf
+      extra/
+        git.conf
+        passenger.conf
+        redmine_a.conf
         svn.conf</code></pre>
     </section>
     <hr />
     <footer>
-      <address>2019-05-22更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+      <address>2019-05-23更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
     </footer>
   </body>
 </html>
