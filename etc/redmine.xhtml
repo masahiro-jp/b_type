@@ -21,12 +21,12 @@
           </thead>
           <tbody>
             <tr><td>OS</td><td>CentOS 7.6.1810</td></tr>
-            <tr><td>Web Server</td><td>Apache 2.4.39(Railsの実行にはPassengerを使用)</td></tr>
-            <tr><td>Version Control</td><td>Subversion 1.12.0</td></tr>
-            <tr><td>Version Control</td><td>Git 2.21.0</td></tr>
-            <tr><td>Database</td><td>PostgreSQL 11.3</td></tr>
+            <tr><td>Web Server</td><td>Apache 2.4.41(Railsの実行にはPassengerを使用)</td></tr>
+            <tr><td>Version Control</td><td>Subversion 1.12.2</td></tr>
+            <tr><td>Version Control</td><td>Git 2.23.0</td></tr>
+            <tr><td>Database</td><td>PostgreSQL 11.5</td></tr>
             <tr><td>Ruby</td><td>Ruby 2.6.3</td></tr>
-            <tr><td>Redmine</td><td>Redmine 4.0.3</td></tr>
+            <tr><td>Redmine</td><td>Redmine 4.0.4</td></tr>
           </tbody>
         </table>
         <p>前バージョン<a href="redmine_2017-09-10.xhtml">redmine_2017-09-10</a>, <a href="redmine_2018-08-13.xhtml">redmine_2018-08-13</a></p>
@@ -80,10 +80,10 @@ dhcpv6-client http ssh</code></pre>
       <section>
         <h1>OpenSSLのインストール</h1>
 <pre><code>$ cd
-$ curl -O https://www.openssl.org/source/openssl-1.1.1b.tar.gz
-$ tar xf openssl-1.1.1b.tar.gz
-$ su -c 'mv openssl-1.1.1b /usr/local/src'
-$ cd /usr/local/src/openssl-1.1.1b
+$ curl -O https://www.openssl.org/source/openssl-1.1.1c.tar.gz
+$ tar xf openssl-1.1.1c.tar.gz
+$ su -c 'mv openssl-1.1.1c /usr/local/src'
+$ cd /usr/local/src/openssl-1.1.1c
 $ ./config
 $ make
 $ su -c 'make install'
@@ -95,17 +95,17 @@ $ su -c 'ldconfig'</code></pre>
         <section>
           <h1>Apacheのインストール</h1>
 <pre><code>$ cd
-$ curl -O "http://ftp.jaist.ac.jp/pub/apache/{apr/apr-1.6.5.tar.gz,apr/apr-util-1.6.1.tar.gz,httpd/httpd-2.4.39.tar.gz}"
-$ tar xf httpd-2.4.39.tar.gz
-$ su -c 'mv httpd-2.4.39 /usr/local/src'
+$ curl -O "http://ftp.jaist.ac.jp/pub/apache/{apr/apr-1.7.0.tar.gz,apr/apr-util-1.6.1.tar.gz,httpd/httpd-2.4.41.tar.gz}"
+$ tar xf httpd-2.4.41.tar.gz
+$ su -c 'mv httpd-2.4.41 /usr/local/src'
 
-$ tar xf apr-1.6.5.tar.gz
-$ mv apr-1.6.5 /usr/local/src/httpd-2.4.39/srclib/apr
+$ tar xf apr-1.7.0.tar.gz
+$ mv apr-1.7.0 /usr/local/src/httpd-2.4.41/srclib/apr
 
 $ tar xf apr-util-1.6.1.tar.gz
-$ mv apr-util-1.6.1 /usr/local/src/httpd-2.4.39/srclib/apr-util
+$ mv apr-util-1.6.1 /usr/local/src/httpd-2.4.41/srclib/apr-util
 
-$ cd /usr/local/src/httpd-2.4.39
+$ cd /usr/local/src/httpd-2.4.41
 $ ./configure --with-included-apr --enable-so --enable-ssl --enable-rewrite --enable-headers --with-ssl=/usr/local/bin
 $ make
 $ su -c 'make install'</code></pre>
@@ -129,7 +129,7 @@ Group apache
 # vi /usr/local/lib/systemd/system/httpd.service</code></pre>
           <p>以下の内容で作成する。</p>
 <pre><code>[Unit]
-Description=httpd-2.4.39 daemon
+Description=httpd-2.4.41 daemon
 After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
@@ -149,10 +149,10 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service t
         <section>
           <h1>sqliteのインストール</h1>
 <pre><code>$ cd
-$ curl -O https://www.sqlite.org/2019/sqlite-autoconf-3280000.tar.gz
-$ tar xf sqlite-autoconf-3280000.tar.gz
-$ su -c 'mv sqlite-autoconf-3280000 /usr/local/src'
-$ cd /usr/local/src/sqlite-autoconf-3280000
+$ curl -O https://www.sqlite.org/2019/sqlite-autoconf-3290000.tar.gz
+$ tar xf sqlite-autoconf-3290000.tar.gz
+$ su -c 'mv sqlite-autoconf-3290000 /usr/local/src'
+$ cd /usr/local/src/sqlite-autoconf-3290000
 $ ./configure
 $ make
 $ su -c 'make install'</code></pre>
@@ -160,10 +160,10 @@ $ su -c 'make install'</code></pre>
         <section>
           <h1>sconsのインストール</h1>
 <pre><code>$ cd
-$ curl -O https://jaist.dl.sourceforge.net/project/scons/scons/3.0.5/scons-3.0.5.tar.gz
-$ tar xf scons-3.0.5.tar.gz
-$ su -c 'mv scons-3.0.5 /usr/local/src'
-$ cd /usr/local/src/scons-3.0.5
+$ curl -O https://jaist.dl.sourceforge.net/project/scons/scons/3.1.0/scons-3.1.0.tar.gz
+$ tar xf scons-3.1.0.tar.gz
+$ su -c 'mv scons-3.1.0 /usr/local/src'
+$ cd /usr/local/src/scons-3.1.0
 $ su -c 'python setup.py install'</code></pre>
         </section>
         <section>
@@ -179,10 +179,10 @@ $ su -c 'scons install'</code></pre>
         <section>
           <h1>subversionのインストール</h1>
 <pre><code>$ cd
-$ curl -O http://ftp.riken.jp/net/apache/subversion/subversion-1.12.0.tar.gz
-$ tar xf subversion-1.12.0.tar.gz
-$ su -c 'mv subversion-1.12.0 /usr/local/src'
-$ cd /usr/local/src/subversion-1.12.0
+$ curl -O http://ftp.riken.jp/net/apache/subversion/subversion-1.12.2.tar.gz
+$ tar xf subversion-1.12.2.tar.gz
+$ su -c 'mv subversion-1.12.2 /usr/local/src'
+$ cd /usr/local/src/subversion-1.12.2
 $ ./configure --with-apr=/usr/local/apache2 --with-apr-util=/usr/local/apache2 --with-serf=/usr/local --with-apxs=/usr/local/apache2/bin/apxs --with-lz4=internal --with-utf8proc=internal
 $ make
 $ su -c 'make install'</code></pre>
@@ -231,10 +231,10 @@ LoadModule dav_module modules/mod_dav.so</code></pre>
       <section>
         <h1>Gitのインストール</h1>
 <pre><code>$ cd
-$ curl https://codeload.github.com/git/git/tar.gz/v2.21.0 -o git-2.21.0.tar.gz
-$ tar xf git-2.21.0.tar.gz
-$ su -c 'mv git-2.21.0 /usr/local/src'
-$ cd /usr/local/src/git-2.21.0
+$ curl https://codeload.github.com/git/git/tar.gz/v2.23.0 -o git-2.23.0.tar.gz
+$ tar xf git-2.23.0.tar.gz
+$ su -c 'mv git-2.23.0 /usr/local/src'
+$ cd /usr/local/src/git-2.23.0
 $ make configure
 $ ./configure
 $ make
@@ -280,10 +280,10 @@ LoadModule cgid_module modules/mod_cgid.so</code></pre>
         <section>
           <h1>PostgreSQLをインストールする。</h1>
 <pre><code>$ cd
-$ curl -O https://ftp.postgresql.org/pub/source/v11.3/postgresql-11.3.tar.gz
-$ tar xf postgresql-11.3.tar.gz
-$ su -c 'mv postgresql-11.3 /usr/local/src'
-$ cd /usr/local/src/postgresql-11.3
+$ curl -O https://ftp.postgresql.org/pub/source/v11.5/postgresql-11.5.tar.gz
+$ tar xf postgresql-11.5.tar.gz
+$ su -c 'mv postgresql-11.5 /usr/local/src'
+$ cd /usr/local/src/postgresql-11.5
 $ ./configure --with-openssl --with-systemd
 $ make
 $ su -c 'make install'</code></pre>
@@ -440,9 +440,9 @@ $ createdb -E UTF-8 -l ja_JP.UTF-8 -O redmine_a_user -T template0 redmine_a_db</
       <section>
         <h1>Redmineのダウンロード</h1>
 <pre><code>$ cd
-$ curl -O http://www.redmine.org/releases/redmine-4.0.3.tar.gz
-$ tar xf redmine-4.0.3.tar.gz
-$ su -c 'mv redmine-4.0.3 /var/lib/redmine_a'</code></pre>
+$ curl -O http://www.redmine.org/releases/redmine-4.0.4.tar.gz
+$ tar xf redmine-4.0.4.tar.gz
+$ su -c 'mv redmine-4.0.4 /var/lib/redmine_a'</code></pre>
       </section>
       <section>
         <h1>データベースへの接続設定</h1>
@@ -600,7 +600,7 @@ Alias /redmine_a /var/lib/redmine_a/public
     </section>
     <hr />
     <footer>
-      <address>2019-05-27更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+      <address>2019-08-25更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
     </footer>
   </body>
 </html>
