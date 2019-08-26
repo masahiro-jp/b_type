@@ -19,7 +19,7 @@
       <ul>
         <li>コンパイラ(Build Tools for Visual Studio 2019 から抽出)</li>
         <li>Spy++(Build Tools for Visual Studio 2019 から抽出)</li>
-        <li>Windows10向けデバッグツール(WinDbg)</li>
+        <li>Windows10向けデバッグツール(WinDbg)(Build Tools for Visual Studio 2019 から抽出)</li>
         <li>Dependency Walker(サイトからダウンロード)</li>
         <li>ResEdit(サイトからダウンロード)</li>
         <li>ResourceHacker(サイトからダウンロード)</li>
@@ -79,6 +79,8 @@ start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17134,versio
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17134,version=10.0.17134.4\Installers\Windows SDK for Windows Store Apps Headers-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17134,version=10.0.17134.4\Installers\Windows SDK for Windows Store Apps Libs-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17134,version=10.0.17134.4\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17134,version=10.0.17134.4\Installers\X64 Debuggers And Tools-x64_en-us.msi"  targetdir=%TARGETDIR%
+start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17134,version=10.0.17134.4\Installers\X86 Debuggers And Tools-x86_en-us.msi"  targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17763,version=10.0.17763.4\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17763,version=10.0.17763.4\Installers\Windows SDK Desktop Headers x86-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17763,version=10.0.17763.4\Installers\Windows SDK Desktop Libs arm-x86_en-us.msi" targetdir=%TARGETDIR%
@@ -91,6 +93,8 @@ start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17763,versio
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17763,version=10.0.17763.4\Installers\Windows SDK for Windows Store Apps Headers-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17763,version=10.0.17763.4\Installers\Windows SDK for Windows Store Apps Libs-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17763,version=10.0.17763.4\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17763,version=10.0.17763.4\Installers\X64 Debuggers And Tools-x64_en-us.msi"  targetdir=%TARGETDIR%
+start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.17763,version=10.0.17763.4\Installers\X86 Debuggers And Tools-x86_en-us.msi"  targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\Windows SDK Desktop Headers x86-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\Windows SDK Desktop Libs arm-x86_en-us.msi" targetdir=%TARGETDIR%
@@ -103,6 +107,8 @@ start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,versio
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\Windows SDK for Windows Store Apps Headers-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\Windows SDK for Windows Store Apps Libs-x86_en-us.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\X64 Debuggers And Tools-x64_en-us.msi"  targetdir=%TARGETDIR%
+start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\X86 Debuggers And Tools-x86_en-us.msi"  targetdir=%TARGETDIR%
 
 7za x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualC.14.*\*.vsix"
 7za x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.ARM64.*\*.vsix"
@@ -189,6 +195,7 @@ winsdksetup.exe /layout "D:\winsdksetup"
 
 start /wait msiexec /a "D:\winsdksetup\Installers\X64 Debuggers And Tools-x64_en-us.msi" targetdir="%TARGETDIR%"
 start /wait msiexec /a "D:\winsdksetup\Installers\X86 Debuggers And Tools-x86_en-us.msi" targetdir="%TARGETDIR%"</code></pre>
+      <p>インストール場所は %TARGETDIR%\Windows Kits\10\Debuggers\x86\windbg.exe または %TARGETDIR%\Windows Kits\10\Debuggers\x64\windbg.exe</p>
     </section>
     <section>
       <h2 id="sec5">リソースエディタ</h2>
