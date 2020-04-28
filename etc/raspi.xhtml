@@ -42,13 +42,13 @@ $ sudo dpkg-reconfigure openssh-server</code></pre>
 sudo gpasswd -a tmp1 sudo
 sudo passwd tmp1</code></pre>
         <p>tmp1ユーザーで入りなおす</p>
-        <pre><code>$ sudo usermod -l masahiro pi
-$ sudo usermod -d /home/masahiro -m masahiro
-$ sudo groupmod -n masahiro pi
+        <pre><code>$ sudo usermod -l username1 pi
+$ sudo usermod -d /home/username1 -m username1
+$ sudo groupmod -n username1 pi
 $ exit</code></pre>
-        <p>masahiroユーザーで入りなおす</p>
+        <p>username1ユーザーで入りなおす</p>
         <pre><code>$ sudo userdel tmp1
-$ sudo passwd masahiro</code></pre>
+$ sudo passwd username1</code></pre>
       </section>
       <section>
         <h1>ブリッジの設定</h1>
@@ -124,7 +124,7 @@ from ****@kta.biglobe.ne.jp
 
 auth login
 user ****@biglobe.ne.jp
-password (ないしょ)
+password *****
 
 account default : biglobe</code></pre>
         <pre><code>$ echo -e "Subject: titile.\nHello." | msmtp -a biglobe ****@kta.biglobe.ne.jp</code></pre>
@@ -132,10 +132,10 @@ account default : biglobe</code></pre>
         <p>ipchecker.sh の作成</p>
         <pre><code>#!/bin/bash
 newip=`curl -sS inet-ip.info`
-oldip=`cat /home/masahiro/old_ip.txt`
+oldip=`cat /home/username1/old_ip.txt`
 if [ $oldip != $newip ]
 then
-    echo "$newip" > /home/masahiro/old_ip.txt
+    echo "$newip" > /home/username1/old_ip.txt
     {
         echo "To: ****@kta.biglobe.ne.jp"
         echo "Subject: 変わりました Change Address"|nkf --mime --ic=UTF-8
@@ -143,25 +143,25 @@ then
         echo "MIME-Version: 1.0"
         echo
         {
-            echo "新しい IP =" `cat /home/masahiro/old_ip.txt`
+            echo "新しい IP =" `cat /home/username1/old_ip.txt`
         }|nkf --ic=UTF-8 --oc=ISO-2022-JP -x -m0
     } | msmtp -a biglobe ****@kta.biglobe.ne.jp
 fi</code></pre>
       </section>
       <section>
         <h1>cronへの登録</h1>
-        <p>/home/masahiro/crontab ファイルを作成する。</p>
+        <p>/home/username1/crontab ファイルを作成する。</p>
         <pre><code># 分 時 日 月 曜日 コマンド
-  00 23 *  *  *    /bin/bash /home/masahiro/ipchecker.sh</code></pre>
+  00 23 *  *  *    /bin/bash /home/username1/ipchecker.sh</code></pre>
         <p>cronへの登録</p>
-        <pre><code>$ crontab /home/masahiro/crontab</code></pre>
+        <pre><code>$ crontab /home/username1/crontab</code></pre>
         <p>登録されたかどうかの確認</p>
         <pre><code>$ crontab -l</code></pre>
       </section>
     </section>
     <hr />
     <footer>
-      <address>2020-04-28更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+      <address>2020-04-29更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
     </footer>
   </body>
 </html>
