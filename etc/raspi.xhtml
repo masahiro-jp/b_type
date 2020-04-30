@@ -105,6 +105,14 @@ ExecStartPost=/sbin/brctl addif br0 tap_softether
 KillMode=process
 Restart=on-failure
 
+# Hardening
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+ReadOnlyDirectories=/
+ReadWriteDirectories=-/usr/local/vpnserver
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_BROADCAST CAP_NET_RAW CAP_SYS_NICE CAP_SYS_ADMIN CAP_SETUID
+
 [Install]
 WantedBy=multi-user.target</code></pre>
         <pre><code>sudo /usr/local/vpnserver/vpnserver start
@@ -161,7 +169,7 @@ fi</code></pre>
     </section>
     <hr />
     <footer>
-      <address>2020-04-28更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+      <address>2020-04-30更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
     </footer>
   </body>
 </html>
