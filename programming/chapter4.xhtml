@@ -36,7 +36,6 @@
 
 set TARGETDIR=D:\VC14_2019
 
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.Net.CoreUWP,version=1.1.49\netfx_NETCoreUWP.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.CRT.ARM.Desktop.Msi,version=14.0.24245\VC_CRT.ARM.Desktop.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.CRT.ARM.OneCore.Desktop.Msi,version=14.0.24245\VC_CRT.ARM.OneCoreDesktop.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.CRT.Headers.Msi,version=14.0.24245\VC_CRT.Headers.msi" targetdir=%TARGETDIR%
@@ -45,6 +44,7 @@ start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.CRT.
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.CRT.x86.Desktop.Msi,version=14.0.24245\VC_CRT.X86.Desktop.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.CRT.x86.OneCore.Desktop.Msi,version=14.0.24245\VC_CRT.X86.OneCoreDesktop.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.MFC.Headers.Msi,version=14.0.24245\VC_MFC.Headers.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.MFC.Source.Msi,version=14.0.24245\VC_MFC.Source.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.Tools.Base.X64.Msi,version=14.0.24245,chip=x64\VC_Tools.X64.Base.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.Tools.Base.X86.Msi,version=14.0.24245\VC_Tools.X86.Base.msi" targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Microsoft.VisualC.140.Tools.HostX64.TargetARM.Msi,version=14.0.24245,chip=x64\VC_Tools.X64.ARM.msi" targetdir=%TARGETDIR%
@@ -110,12 +110,12 @@ start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,versio
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\X64 Debuggers And Tools-x64_en-us.msi"  targetdir=%TARGETDIR%
 start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.18362,version=10.0.18362.0\Installers\X86 Debuggers And Tools-x86_en-us.msi"  targetdir=%TARGETDIR%
 
-7za x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualC.14.*\*.vsix"
-7za x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.ARM64.*\*.vsix"
-7za x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.arm.*\*.vsix"
-7za x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.x64.*\*.vsix"
-7za x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.x86.*\*.vsix"
-7za x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.Tools.Host*\*.vsix"
+7z x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualC.14.*\*.vsix"
+7z x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.ARM64.*\*.vsix"
+7z x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.arm.*\*.vsix"
+7z x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.x64.*\*.vsix"
+7z x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.x86.*\*.vsix"
+7z x -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.Tools.Host*\*.vsix"
 xcopy /e "%TEMP%\Contents" "%TARGETDIR%\Program Files\Microsoft Visual Studio\2019\BuildTools\"
 rmdir /s /q "%TEMP%\Contents"
 
@@ -161,7 +161,7 @@ rename "%TARGETDIR%\Program Files\Microsoft Visual Studio 14.0\VC\bin\x86_arm\vc
       <section>
         <h1>spy++ の抽出</h1>
         <p>spy++のインストールは特殊。*.vsixをzipとして解凍する。</p>
-        <pre><code>7za e -o"%TARGETDIR%\Program Files\Microsoft Visual Studio 14.0\Common7\Tools"      -ir!"Contents\Common7\Tools"      "D:\vs_buildtools_2019_offline\Microsoft.VisualStudio.VC.Ide.Dskx,version=16.1.28810.153\payload.vsix"
+        <pre><code>7za e -o"%TARGETDIR%\Program Files\Microsoft Visual Studio 14.0\Common7\Tools"      -ir!"Contents\Common7\Tools"      "D:\vs_buildtools_2019_offline\Microsoft.VisualStudio.VC.Ide.Dskx,version=16.5.29721.120\payload.vsix"
 7za e -o"%TARGETDIR%\Program Files\Microsoft Visual Studio 14.0\Common7\Tools\1041" -ir!"Contents\Common7\Tools\1041" "D:\vs_buildtools_2019_offline\Microsoft.VisualStudio.VC.Ide.Dskx.Resources,version=16.2.29109.103,language=ja-JP\payload.vsix"</code></pre>
         <p>Contents/Common7/Tools の下を使用する。</p>
       </section>
@@ -186,15 +186,7 @@ rename "%TARGETDIR%\Program Files\Microsoft Visual Studio 14.0\VC\bin\x86_arm\vc
     </section>
     <section>
       <h2 id="sec4">Windows 10 向けデバッグ ツール (WinDbg) </h2>
-      <p><a href="https://developer.microsoft.com/ja-jp/windows/hardware/download-windbg">ここ</a> からダウンロードし引き抜く。</p>
-      <pre><code>Debuggers And Tools の抽出
-WinDbg:10.0.15063.468 AMD64
-WinDbg:10.0.15063.468 X86
-
-winsdksetup.exe /layout "D:\winsdksetup"
-
-start /wait msiexec /a "D:\winsdksetup\Installers\X64 Debuggers And Tools-x64_en-us.msi" targetdir="%TARGETDIR%"
-start /wait msiexec /a "D:\winsdksetup\Installers\X86 Debuggers And Tools-x86_en-us.msi" targetdir="%TARGETDIR%"</code></pre>
+      <p><a href="https://developer.microsoft.com/ja-jp/windows/hardware/download-windbg">ここ</a> からダウンロードし引き抜いていたが、BuildToolsに含まれるようになったようだ。</p>
       <p>インストール場所は %TARGETDIR%\Windows Kits\10\Debuggers\x86\windbg.exe または %TARGETDIR%\Windows Kits\10\Debuggers\x64\windbg.exe</p>
     </section>
     <section>
@@ -972,6 +964,6 @@ clean:
 &lt;/assembly&gt;</code></pre>
     </section>
     <hr />
-    <address>2019-09-05更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+    <address>2020-05-07更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
   </body>
 </html>
