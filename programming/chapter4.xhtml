@@ -34,65 +34,42 @@
         <h1>コンパイラの抽出</h1>
           <pre><code>vs_BuildTools.exe --layout D:\vs_BuildTools_2019_offline --lang ja-JP
 
-set TARGETDIR=D:\VC14.27
+set TARGETDIR=D:\VC14.29
 path "C:\Program Files\7-Zip"
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\MSI Development Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Universal CRT Tools x64-x64_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Universal CRT Tools x86-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK ARM Desktop Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Headers arm-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Headers arm64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Headers x64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Headers x86-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Libs arm-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Libs arm64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Libs x64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Libs x86-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Tools arm64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Tools x64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Desktop Tools x86-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK for Windows Store Apps Headers-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK for Windows Store Apps Legacy Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK for Windows Store Apps Libs-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK for Windows Store Managed Apps Libs-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Modern Non-Versioned Developer Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Modern Versioned Developer Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.16299,version=10.0.16299.5\Installers\Windows SDK Signing Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\MSI Development Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Universal CRT Tools x64-x64_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Universal CRT Tools x86-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK ARM Desktop Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Headers arm-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Headers arm64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Headers x64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Headers x86-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Libs arm-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Libs arm64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Libs x64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Libs x86-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Tools arm64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Tools x64-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Desktop Tools x86-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK for Windows Store Apps Headers-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK for Windows Store Apps Legacy Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK for Windows Store Apps Libs-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK for Windows Store Managed Apps Libs-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Modern Non-Versioned Developer Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Modern Versioned Developer Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\Windows SDK Signing Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\X64 Debuggers And Tools-x64_en-us.msi" targetdir=%TARGETDIR%
-start /wait msiexec /a "D:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.0\Installers\X86 Debuggers And Tools-x86_en-us.msi" targetdir=%TARGETDIR%
-7z x -aoa -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualC.14.*\*.vsix"
-7z x -aoa -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.ARM64.*\*.vsix"
-7z x -aoa -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.arm.*\*.vsix"
-7z x -aoa -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.x64.*\*.vsix"
-7z x -aoa -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.x86.*\*.vsix"
-7z x -aoa -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualCpp.Tools.Host*\*.vsix"
-7z x -aoa -o"%TEMP%" -ir!Contents "D:\vs_buildtools_2019_offline\Microsoft.VisualStudio.VC.Ide.Dskx*\*.vsix"
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\MSI Development Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Universal CRT Headers Libraries and Sources-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Universal CRT Tools x64-x64_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Universal CRT Tools x86-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK ARM Desktop Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Headers arm-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Headers arm64-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Headers x64-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Headers x86-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Libs arm-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Libs arm64-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Libs x64-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Libs x86-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Tools arm64-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Tools x64-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Desktop Tools x86-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK for Windows Store Apps Headers-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK for Windows Store Apps Legacy Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK for Windows Store Apps Libs-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK for Windows Store Apps Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK for Windows Store Managed Apps Libs-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Modern Non-Versioned Developer Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Modern Versioned Developer Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\Windows SDK Signing Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\X64 Debuggers And Tools-x64_en-us.msi" targetdir=%TARGETDIR%
+start /wait msiexec /a "F:\vs_buildtools_2019_offline\Win10SDK_10.0.19041,version=10.0.19041.1\Installers\X86 Debuggers And Tools-x86_en-us.msi" targetdir=%TARGETDIR%
+
+7z x -aoa -o"%TEMP%" -ir!Contents "F:\vs_BuildTools_2019_offline\Microsoft.VC.14.29.*\*.vsix"
+7z x -aoa -o"%TEMP%" -ir!Contents "F:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.ARM64.*\*.vsix"
+7z x -aoa -o"%TEMP%" -ir!Contents "F:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.arm.*\*.vsix"
+7z x -aoa -o"%TEMP%" -ir!Contents "F:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.x64.*\*.vsix"
+7z x -aoa -o"%TEMP%" -ir!Contents "F:\vs_buildtools_2019_offline\Microsoft.VisualCpp.CRT.x86.*\*.vsix"
+7z x -aoa -o"%TEMP%" -ir!Contents "F:\vs_buildtools_2019_offline\Microsoft.VisualCpp.Tools.Host*\*.vsix"
+7z x -aoa -o"%TEMP%" -ir!Contents "F:\vs_buildtools_2019_offline\Microsoft.VisualStudio.VC.Ide.Dskx*\*.vsix"
 %SystemRoot%\System32\xcopy /e "%TEMP%\Contents" "%TARGETDIR%\Program Files\Microsoft Visual Studio\2019\BuildTools\"
 rmdir /s /q "%TEMP%\Contents"
 for /R "%TARGETDIR%\Program Files" %I in (vctip.exe) do @if exist %I rename "%I" vctip_.exe</code></pre>
@@ -417,24 +394,24 @@ rem 32bitを生成する32bitのコンパイラ
 set Platform=
 set CommandPromptType=
 
-set WindowsSdkDir=D:\VC14.27\Windows Kits\10
-set VCINSTALLDIR=D:\VC14.27\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.27.29110
+set WindowsSdkDir=D:\VC14.29\Windows Kits\10
+set VCINSTALLDIR=D:\VC14.29\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30037
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.16299.0\ucrt;%WindowsSdkDir%\Include\10.0.16299.0\shared;%WindowsSdkDir%\Include\10.0.16299.0\um
-set LIB=%VCINSTALLDIR%\lib\<em>x86</em>;%WindowsSdkDir%\Lib\10.0.16299.0\um\<em>x86</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.19041.0\ucrt;%WindowsSdkDir%\Include\10.0.19041.0\shared;%WindowsSdkDir%\Include\10.0.19041.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>x86</em>;%WindowsSdkDir%\Lib\10.0.19041.0\um\<em>x86</em>
 
-path %VCINSTALLDIR%\bin\<em>HostX86</em>\<em>x86</em>;%WindowsSdkDir%\bin\10.0.16299.0\<em>x86</em>
+path %VCINSTALLDIR%\bin\<em>HostX86</em>\<em>x86</em>;%WindowsSdkDir%\bin\10.0.19041.0\<em>x86</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
 >cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.27.29110 for <em>x86</em>
+Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30040 for <em>x86</em>
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
 
 >link
-Microsoft (R) Incremental Linker Version 14.27.29110.0
+Microsoft (R) Incremental Linker Version 14.29.30040.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
  使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
@@ -447,24 +424,24 @@ rem 64bitを生成する32bitのコンパイラ
 set Platform=<em>x64</em>
 set CommandPromptType=<em>Cross</em>
 
-set WindowsSdkDir=D:\VC14.27\Windows Kits\10
-set VCINSTALLDIR=D:\VC14.27\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.21.27702
+set WindowsSdkDir=D:\VC14.29\Windows Kits\10
+set VCINSTALLDIR=D:\VC14.29\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30037
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.16299.0\ucrt;%WindowsSdkDir%\Include\10.0.16299.0\shared;%WindowsSdkDir%\Include\10.0.16299.0\um
-set LIB=%VCINSTALLDIR%\lib\<em>x64</em>;%WindowsSdkDir%\Lib\10.0.16299.0\um\<em>x64</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.19041.0\ucrt;%WindowsSdkDir%\Include\10.0.19041.0\shared;%WindowsSdkDir%\Include\10.0.19041.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>x64</em>;%WindowsSdkDir%\Lib\10.0.19041.0\um\<em>x64</em>
 
-path %VCINSTALLDIR%\bin\<em>HostX86</em>\<em>x64</em>;%WindowsSdkDir%\bin\10.0.16299.0\<em>x86</em>
+path %VCINSTALLDIR%\bin\<em>HostX86</em>\<em>x64</em>;%WindowsSdkDir%\bin\10.0.19041.0\<em>x86</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
 >cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.27.29110 for <em>x64</em>
+Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30040 for <em>x64</em>
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
 
 >link
-Microsoft (R) Incremental Linker Version 14.27.29110.0
+Microsoft (R) Incremental Linker Version 14.29.30040.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
  使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
@@ -477,24 +454,24 @@ rem armを生成する32bitコンパイラ
 set Platform=<em>ARM</em>
 set CommandPromptType=<em>Cross</em>
 
-set WindowsSdkDir=D:\VC14.27\Windows Kits\10
-set VCINSTALLDIR=D:\VC14.27\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.21.27702
+set WindowsSdkDir=D:\VC14.29\Windows Kits\10
+set VCINSTALLDIR=D:\VC14.29\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30037
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.16299.0\ucrt;%WindowsSdkDir%\Include\10.0.16299.0\shared;%WindowsSdkDir%\Include\10.0.16299.0\um
-set LIB=%VCINSTALLDIR%\lib\<em>arm</em>;%WindowsSdkDir%\Lib\10.0.16299.0\um\<em>arm</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.19041.0\ucrt;%WindowsSdkDir%\Include\10.0.19041.0\shared;%WindowsSdkDir%\Include\10.0.19041.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>arm</em>;%WindowsSdkDir%\Lib\10.0.19041.0\um\<em>arm</em>
 
-path %VCINSTALLDIR%\bin\<em>HostX86</em>\<em>arm</em>;%WindowsSdkDir%\bin\10.0.16299.0\<em>x86</em>
+path %VCINSTALLDIR%\bin\<em>HostX86</em>\<em>arm</em>;%WindowsSdkDir%\bin\10.0.19041.0\<em>x86</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
 >cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.27.29110 for <em>ARM</em>
+Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30040 for <em>ARM</em>
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
 
 >link
-Microsoft (R) Incremental Linker Version 14.27.29110.0
+Microsoft (R) Incremental Linker Version 14.29.30040.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
  使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
@@ -507,24 +484,24 @@ rem arm64を生成する32bitコンパイラ
 set Platform=<em>ARM64</em>
 set CommandPromptType=<em>Cross</em>
 
-set WindowsSdkDir=D:\VC14.27\Windows Kits\10
-set VCINSTALLDIR=D:\VC14.27\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.21.27702
+set WindowsSdkDir=D:\VC14.29\Windows Kits\10
+set VCINSTALLDIR=D:\VC14.29\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30037
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.16299.0\ucrt;%WindowsSdkDir%\Include\10.0.16299.0\shared;%WindowsSdkDir%\Include\10.0.16299.0\um
-set LIB=%VCINSTALLDIR%\lib\<em>arm64</em>;%WindowsSdkDir%\Lib\10.0.16299.0\um\<em>arm64</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.19041.0\ucrt;%WindowsSdkDir%\Include\10.0.19041.0\shared;%WindowsSdkDir%\Include\10.0.19041.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>arm64</em>;%WindowsSdkDir%\Lib\10.0.19041.0\um\<em>arm64</em>
 
-path %VCINSTALLDIR%\bin\<em>HostX86</em>\<em>arm64</em>;%WindowsSdkDir%\bin\10.0.16299.0\<em>x86</em>
+path %VCINSTALLDIR%\bin\<em>HostX86</em>\<em>arm64</em>;%WindowsSdkDir%\bin\10.0.19041.0\<em>x86</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
 >cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.27.29110 for <em>ARM64</em>
+Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30040 for <em>ARM64</em>
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
 
 >link
-Microsoft (R) Incremental Linker Version 14.27.29110.0
+Microsoft (R) Incremental Linker Version 14.29.30040.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
  使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
@@ -537,24 +514,24 @@ rem 64bitを生成する64bitのコンパイラ
 set Platform=<em>X64</em>
 set CommandPromptType=<em>Native</em>
 
-set WindowsSdkDir=D:\VC14.27\Windows Kits\10
-set VCINSTALLDIR=D:\VC14.27\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.21.27702
+set WindowsSdkDir=D:\VC14.29\Windows Kits\10
+set VCINSTALLDIR=D:\VC14.29\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30037
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.16299.0\ucrt;%WindowsSdkDir%\Include\10.0.16299.0\shared;%WindowsSdkDir%\Include\10.0.16299.0\um
-set LIB=%VCINSTALLDIR%\lib\<em>x64</em>;%WindowsSdkDir%\Lib\10.0.16299.0\um\<em>x64</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.19041.0\ucrt;%WindowsSdkDir%\Include\10.0.19041.0\shared;%WindowsSdkDir%\Include\10.0.19041.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>x64</em>;%WindowsSdkDir%\Lib\10.0.19041.0\um\<em>x64</em>
 
-path %VCINSTALLDIR%\bin\<em>HostX64</em>\<em>x64</em>;%WindowsSdkDir%\bin\10.0.16299.0\<em>x64</em>
+path %VCINSTALLDIR%\bin\<em>HostX64</em>\<em>x64</em>;%WindowsSdkDir%\bin\10.0.19041.0\<em>x64</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
 >cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.27.29110 for <em>x64</em>
+Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30040 for <em>x64</em>
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
 
 >link
-Microsoft (R) Incremental Linker Version 14.27.29110.0
+Microsoft (R) Incremental Linker Version 14.29.30040.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
  使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
@@ -568,24 +545,24 @@ set Platform=<em>X86</em>
 set CommandPromptType=<em>Cross</em>
 <em>set PreferredToolArchitecture=x64</em>
 
-set WindowsSdkDir=D:\VC14.27\Windows Kits\10
-set VCINSTALLDIR=D:\VC14.27\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.21.27702
+set WindowsSdkDir=D:\VC14.29\Windows Kits\10
+set VCINSTALLDIR=D:\VC14.29\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30037
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.16299.0\ucrt;%WindowsSdkDir%\Include\10.0.16299.0\shared;%WindowsSdkDir%\Include\10.0.16299.0\um
-set LIB=%VCINSTALLDIR%\lib\<em>x86</em>;%WindowsSdkDir%\Lib\10.0.16299.0\um\<em>x86</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.19041.0\ucrt;%WindowsSdkDir%\Include\10.0.19041.0\shared;%WindowsSdkDir%\Include\10.0.19041.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>x86</em>;%WindowsSdkDir%\Lib\10.0.19041.0\um\<em>x86</em>
 
-path %VCINSTALLDIR%\bin\<em>HostX64</em>\<em>x86</em>;%WindowsSdkDir%\bin\10.0.16299.0\<em>x64</em>
+path %VCINSTALLDIR%\bin\<em>HostX64</em>\<em>x86</em>;%WindowsSdkDir%\bin\10.0.19041.0\<em>x64</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
 >cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.27.29110 for <em>x86</em>
+Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30040 for <em>x86</em>
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
 
 >link
-Microsoft (R) Incremental Linker Version 14.27.29110.0
+Microsoft (R) Incremental Linker Version 14.29.30040.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
  使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
@@ -599,24 +576,24 @@ set Platform=<em>ARM</em>
 set CommandPromptType=<em>Cross</em>
 <em>set PreferredToolArchitecture=x64</em>
 
-set WindowsSdkDir=D:\VC14.27\Windows Kits\10
-set VCINSTALLDIR=D:\VC14.27\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.21.27702
+set WindowsSdkDir=D:\VC14.29\Windows Kits\10
+set VCINSTALLDIR=D:\VC14.29\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30037
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.16299.0\ucrt;%WindowsSdkDir%\Include\10.0.16299.0\shared;%WindowsSdkDir%\Include\10.0.16299.0\um
-set LIB=%VCINSTALLDIR%\lib\<em>arm</em>;%WindowsSdkDir%\Lib\10.0.16299.0\um\<em>arm</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.19041.0\ucrt;%WindowsSdkDir%\Include\10.0.19041.0\shared;%WindowsSdkDir%\Include\10.0.19041.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>arm</em>;%WindowsSdkDir%\Lib\10.0.19041.0\um\<em>arm</em>
 
-path %VCINSTALLDIR%\bin\<em>HostX64</em>\<em>arm</em>;%WindowsSdkDir%\bin\10.0.16299.0\<em>x64</em>
+path %VCINSTALLDIR%\bin\<em>HostX64</em>\<em>arm</em>;%WindowsSdkDir%\bin\10.0.19041.0\<em>x64</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
 >cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.27.29110 for <em>ARM</em>
+Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30040 for <em>ARM</em>
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
 
 >link
-Microsoft (R) Incremental Linker Version 14.27.29110.0
+Microsoft (R) Incremental Linker Version 14.29.30040.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
  使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
@@ -630,24 +607,24 @@ set Platform=<em>ARM64</em>
 set CommandPromptType=<em>Cross</em>
 <em>set PreferredToolArchitecture=x64</em>
 
-set WindowsSdkDir=D:\VC14.27\Windows Kits\10
-set VCINSTALLDIR=D:\VC14.27\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.21.27702
+set WindowsSdkDir=D:\VC14.29\Windows Kits\10
+set VCINSTALLDIR=D:\VC14.29\Program Files\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30037
 
-set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.16299.0\ucrt;%WindowsSdkDir%\Include\10.0.16299.0\shared;%WindowsSdkDir%\Include\10.0.16299.0\um
-set LIB=%VCINSTALLDIR%\lib\<em>arm64</em>;%WindowsSdkDir%\Lib\10.0.16299.0\um\<em>arm64</em>
+set INCLUDE=%VCINSTALLDIR%\include;%WindowsSdkDir%\Include\10.0.19041.0\ucrt;%WindowsSdkDir%\Include\10.0.19041.0\shared;%WindowsSdkDir%\Include\10.0.19041.0\um
+set LIB=%VCINSTALLDIR%\lib\<em>arm64</em>;%WindowsSdkDir%\Lib\10.0.19041.0\um\<em>arm64</em>
 
-path %VCINSTALLDIR%\bin\<em>HostX64</em>\<em>arm64</em>;%WindowsSdkDir%\bin\10.0.16299.0\<em>x64</em>
+path %VCINSTALLDIR%\bin\<em>HostX64</em>\<em>arm64</em>;%WindowsSdkDir%\bin\10.0.19041.0\<em>x64</em>
 
 prompt %USERNAME%@%USERDOMAIN%$g
 ----
 >cl
-Microsoft(R) C/C++ Optimizing Compiler Version 19.27.29110 for <em>ARM64</em>
+Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30040 for <em>ARM64</em>
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 使い方: cl [ オプション... ] ファイル名... [ /link リンク オプション... ]
 
 >link
-Microsoft (R) Incremental Linker Version 14.27.29110.0
+Microsoft (R) Incremental Linker Version 14.29.30040.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
  使い方: LINK [オプション] [ファイル] [@コマンドファイル]</code></pre>
@@ -658,98 +635,95 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
       <section>
         <h1>pathについて</h1>
         <p>全部は書いていない。主に使用するファイル。以前はnmakeなどは特定のディレクトリにしか入っていなかったが最近のは各ディレクトリ下に置かれるようになったようだ。</p>
-        <pre><code>%VCINSTALLDIR%\bin\Hostx64\arm
-cl.exe
-dumpbin.exe
-lib.exe
-link.exe
-nmake.exe
+        <pre><code>%VCINSTALLDIR%\bin\
+  Hostx64\
+    arm\
+      cl.exe
+      dumpbin.exe
+      lib.exe
+      link.exe
+      nmake.exe
+    arm64\
+      cl.exe
+      dumpbin.exe
+      lib.exe
+      link.exe
+      nmake.exe
+    x64\
+      cl.exe
+      dumpbin.exe
+      lib.exe
+      link.exe
+      nmake.exe
+    x86\
+      cl.exe
+      dumpbin.exe
+      lib.exe
+      link.exe
+      nmake.exe
+  Hostx86\
+    arm\
+      cl.exe
+      dumpbin.exe
+      lib.exe
+      link.exe
+      nmake.exe
+    arm64\
+      cl.exe
+      dumpbin.exe
+      lib.exe
+      link.exe
+      nmake.exe
+    x64\
+      cl.exe
+      dumpbin.exe
+      lib.exe
+      link.exe
+      nmake.exe
+    x86\
+      cl.exe
+      dumpbin.exe
+      lib.exe
+      link.exe
+      nmake.exe
 
-%VCINSTALLDIR%\bin\Hostx64\arm64
-cl.exe
-dumpbin.exe
-lib.exe
-link.exe
-nmake.exe
-
-%VCINSTALLDIR%\bin\Hostx64\x64
-cl.exe
-dumpbin.exe
-lib.exe
-link.exe
-nmake.exe
-
-%VCINSTALLDIR%\bin\Hostx64\x86
-cl.exe
-dumpbin.exe
-lib.exe
-link.exe
-nmake.exe
-
-%VCINSTALLDIR%\bin\Hostx86\arm
-cl.exe
-dumpbin.exe
-lib.exe
-link.exe
-nmake.exe
-
-%VCINSTALLDIR%\bin\Hostx86\arm64
-cl.exe
-dumpbin.exe
-lib.exe
-link.exe
-nmake.exe
-
-%VCINSTALLDIR%\bin\Hostx86\x64
-cl.exe
-dumpbin.exe
-lib.exe
-link.exe
-nmake.exe
-
-%VCINSTALLDIR%\bin\Hostx86\x86
-cl.exe
-dumpbin.exe
-lib.exe
-link.exe
-nmake.exe
-
-%WindowsSdkDir%\bin\10.0.16299.0\arm64
-mc.exe
-mt.exe
-oleview.exe
-rc.exe
-
-%WindowsSdkDir%\bin\10.0.16299.0\x64
-mc.exe
-mt.exe
-oleview.exe
-rc.exe
-
-%WindowsSdkDir%\bin\10.0.16299.0\x86
-mc.exe
-mt.exe
-oleview.exe
-rc.exe
-<em>uicc.exe</em>
+%WindowsSdkDir%\bin\10.0.19041.0\
+  arm\
+    (なし)
+  arm64\
+    mc.exe
+    mt.exe
+    oleview.exe
+    rc.exe
+  x64\
+    mc.exe
+    mt.exe
+    oleview.exe
+    rc.exe
+  x86\
+    mc.exe
+    mt.exe
+    oleview.exe
+    rc.exe
+    <em>uicc.exe</em>
 
 ツール類
 
-D:\VC14.27\Program Files\Microsoft Visual Studio 14.0\Common7\Tools
+D:\VC14.29\Program Files\Microsoft Visual Studio\2019\BuildTools\Common7\Tools
 spyxx.exe
 spyxx_amd64.exe
 
-%WindowsSdkDir%\Debuggers\x64
-windbg.exe
-
-%WindowsSdkDir%\Debuggers\x86
-windbg.exe
-
-%WindowsSdkDir%\Tools\x64
-depends.exe
-
-%WindowsSdkDir%\Tools\x86
-depends.exe</code></pre>
+%WindowsSdkDir%\
+  Debuggers\
+    x64\
+      windbg.exe
+    x86\
+      windbg.exe
+  Tools\
+    x64\
+      depends.exe
+    x86\
+      depends.exe</code></pre>
       </section>
     </section>
     <section>
@@ -870,7 +844,63 @@ clean:
         </li>
       </ul>
       <p>dllファイルを作る場合</p>
-      <pre><code>まだ未作成</code></pre>
+      <pre><code>LIBS=kernel32.lib user32.lib gdi32.lib comctl32.lib shell32.lib comdlg32.lib libcmt.lib
+
+CFLAGS=/nologo /c /Wall /GS- /LD /DWIN32_LEAN_AND_MEAN /D_MSVC_LANG /DWINVER=0x0601 /D_WIN32_WINNT=0x0601 /DWIN32 /D_WINDLL /DUNICODE /D_UNICODE /DSTRICT /analyze
+RFLAGS=/nologo /d WIN32 /d _WINDOWS /d UNICODE /d _UNICODE
+LDFLAGS=/NOLOGO /NODEFAULTLIB /DLL /INCREMENTAL:NO /SAFESEH:NO
+!if "$(PLATFORM:X86=)" == ""
+LDFLAGS=$(LDFLAGS) /MANIFESTDEPENDENCY:"type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'"
+!elseif "$(PLATFORM:X64=x64)" == "x64"
+LDFLAGS=$(LDFLAGS) /MANIFESTDEPENDENCY:"type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'"
+!else
+LDFLAGS=$(LDFLAGS) /MANIFESTDEPENDENCY:"type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'"
+!endif
+
+TARGETDIR=..^\
+OBJECTDIR=
+!if "$(PLATFORM:X64=x64)" == "x64"
+TARGETDIR=..\x64^\
+OBJECTDIR=x64^\
+!elseif "$(PLATFORM:ARM=arm)" == "arm"
+TARGETDIR=..\arm^\
+OBJECTDIR=arm^\
+!elseif "$(PLATFORM:ARM64=arm64)" == "arm64"
+TARGETDIR=..\arm64^\
+OBJECTDIR=arm64^\
+!endif
+
+all: debug release
+
+debug: $(TARGETDIR)Debug\project03.dll
+release: $(TARGETDIR)Release\project03.dll
+
+$(TARGETDIR)Debug\project03.dll: $(OBJECTDIR)Debug\project03.obj $(OBJECTDIR)Debug\project03.res
+	if not exist $(TARGETDIR)Debug mkdir $(TARGETDIR)Debug
+	link $(LDFLAGS) /MANIFEST:EMBED /DEBUG /PDBALTPATH:%_PDB% /PDB:$@.pdb /OUT:$@ $(OBJECTDIR)Debug\project03.obj $(OBJECTDIR)Debug\project03.res $(LIBS)
+
+$(OBJECTDIR)Debug\project03.obj: $(@B).c
+	if not exist $(OBJECTDIR)Debug mkdir $(OBJECTDIR)Debug
+	cl $(CFLAGS) /Zi /Fd$(OBJECTDIR)Debug\project03 /Fo$@ /D_DEBUG $(@B).c
+
+$(OBJECTDIR)Debug\project03.res: $(@B).rc
+	rc $(RFLAGS) /d _DEBUG /fo $@ $(@B).rc
+
+$(TARGETDIR)Release\project03.dll: $(OBJECTDIR)Release\project03.obj $(OBJECTDIR)Release\project03.res
+	if not exist $(TARGETDIR)Release mkdir $(TARGETDIR)Release
+	link $(LDFLAGS) /MANIFEST:EMBED /OPT:REF /LTCG /OUT:$@ $(OBJECTDIR)Release\project03.obj $(OBJECTDIR)Release\project03.res $(LIBS)
+
+$(OBJECTDIR)Release\project03.obj: $(@B).c
+	if not exist $(OBJECTDIR)Release mkdir $(OBJECTDIR)Release
+	cl $(CFLAGS) /GL /O2 /DNDEBUG /Fo$@ $(@B).c
+
+$(OBJECTDIR)Release\project03.res: $(@B).rc
+	rc $(RFLAGS) /d NDEBUG /fo $@ $(@B).rc
+
+clean:
+	@for /r $(OBJECTDIR)Debug %%I in (project03.obj project03.res project03.pdb project03.nativecodeanalysis.xml) do @if exist %%I del "%%I"
+	@for /r $(OBJECTDIR)Release %%I in (project03.obj project03.res project03.nativecodeanalysis.xml) do @if exist %%I del "%%I"
+</code></pre>
     </section>
     <section>
       <h2 id="sec12">マニフェストファイル</h2>
@@ -901,6 +931,6 @@ clean:
 &lt;/assembly&gt;</code></pre>
     </section>
     <hr />
-    <address>2020-11-15更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+    <address>2021-08-02更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
   </body>
 </html>
