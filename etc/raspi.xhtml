@@ -76,8 +76,8 @@ iface default inet dhcp</code></pre>
       </section>
       <section>
         <h1>SoftEtherインストール</h1>
-        <pre><code>$ wget https://github.com/SoftEtherVPN/SoftEtherVPN_Stable/releases/download/v4.29-9680-rtm/softether-vpnserver-v4.29-9680-rtm-2019.02.28-linux-arm_eabi-32bit.tar.gz</code></pre>
-        <pre><code>$ tar zxf softether-vpnserver-v4.29-9680-rtm-2019.02.28-linux-arm_eabi-32bit.tar.gz</code></pre>
+        <pre><code>$ wget https://github.com/SoftEtherVPN/SoftEtherVPN_Stable/releases/download/v4.38-9760-rtm/softether-vpnserver-v4.38-9760-rtm-2021.08.17-linux-arm_eabi-32bit.tar.gz</code></pre>
+        <pre><code>$ tar zxf softether-vpnserver-v4.38-9760-rtm-2021.08.17-linux-arm_eabi-32bit.tar.gz</code></pre>
         <pre><code>$ cd vpnserver
 $ make</code></pre>
         <pre><code>$ cd ..
@@ -86,6 +86,59 @@ $ sudo mv vpnserver /usr/local/</code></pre>
 $ sudo chmod 600 *
 $ sudo chmod 700 vpncmd
 $ sudo chmod 700 vpnserver</code></pre>
+      </section>
+      <section>
+        <h1>SoftEther VPN サーバー管理マネージャ 起動</h1>
+        <p>初回は管理接続用パスワードを聞かれるが、未入力のままOK</p>
+        <img src="image7.png"/>
+        <p>ここでパスワードを決定する。</p>
+        <img src="image8.png"/>
+        <p>SoftEther VPN Server / Bridge 簡易セットアップ</p>
+        <p>「リモートアクセス VPN サーバー」にチェックを入れ「次へ」をクリックする</p>
+        <img src="image9.png"/>
+        <p>そのまま「はい」をクリックする</p>
+        <img src="image10.png"/>
+        <p>適当な名前を入力し「OK」をクリックする</p>
+        <img src="image11.png"/>
+        <p>ダイナミックDNS機能</p>
+        <p>特にすることはないので「閉じる」をクリックする</p>
+        <img src="image12.png"/>
+        <p>IPsec / EtherIP / L2TPv3 サーバー機能の設定</p>
+        <p>「L2TPサーバー機能を有効にする(L2TP over IPsec)」にチェック、「IPsec事前共有鍵」に推測されにくい文字列を入力する(デフォルトのvpnは危険)</p>
+        <img src="image13.png"/>
+        <p>VPN Azure サービスの設定</p>
+        <p>「VPN Azure を無効にする」を選択し「OK」をクリックする</p>
+        <img src="image14.png"/>
+        <p>簡易セットアップの実行</p>
+        <p>「1.VPN接続を受け入れるためのユーザーの作成」</p>
+        <p>「ユーザーを作成する」ボタンをクリックする</p>
+        <img src="image15.png"/>
+        <p>「ユーザー名」とパスワードを入力(認証方法が「パスワード認証」であることも確認する))し「OK」ボタンをクリックする</p>
+        <img src="image16.png"/>
+        <p>ユーザーが作成されたことを確認し「閉じる」ボタンをクリックする</p>
+        <img src="image17.png"/>
+        <p>「3.ローカルブリッジの設定」(2.接続先の...はスキップする))</p>
+        <p>「br0」を選択する。(あとで変更するので、ここでする必要はないかも・・・)</p>
+        <p>「閉じる」ボタンをクリックする</p>
+        <img src="image18.png"/>
+        <p>簡易セットアップはここまで。通常の管理画面となる</p>
+        <p>「ローカルブリッジ設定」をクリックする</p>
+        <img src="image19.png"/>
+        <p>ローカルブリッジ設定</p>
+        <p>さきほど作成した「br0」を選択し「ローカルブリッジの削除」ボタンをクリック</p>
+        <img src="image20.png"/>
+        <p>「仮想ハブ」「新しいtapデバイスとのブリッジ接続」「新しいtapデバイス名」を入力後「ローカルブリッジを追加」ボタンをクリック</p>
+        <img src="image21.png"/>
+        <p>追加されたのを確認し「閉じる」ボタンをクリックする</p>
+        <img src="image22.png"/>
+      </section>
+      <section>
+        <h1>ブリッジの設定</h1>
+        <pre><code>$ sudo /sbin/brctl addif br0 tap_softether</code></pre>
+        <pre><code>$ sudo /sbin/brctl show
+bridge name     bridge id               STP enabled     interfaces
+br0             8000.5ecac01145de       no              eth0
+                                                        Tap_softether</code></pre>
       </section>
       <section>
         <h1>自動起動の設定</h1>
@@ -179,31 +232,10 @@ fi</code></pre>
           </tbody>
         </table>
       </section>
-      <section>
-        <h1>SoftEther VPN サーバー管理マネージャの設定</h1>
-        <section>
-          <h1>IPsec/L2TP設定</h1>
-          <p>IPsec/L2TP設定をクリックする</p>
-          <img src="image1.png"/>
-          <p>「L2TPサーバー機能を有効にする(L2TP over IPsec)」、「IPsec事前共有鍵」を設定する</p>
-          <img src="image2.png"/>
-        </section>
-        <section>
-          <h1>ユーザー/パスワード設定</h1>
-          <p>仮想HUBの管理をクリック</p>
-          <img src="image3.png"/>
-          <p>ユーザーの管理をクリック</p>
-          <img src="image4.png"/>
-          <p>編集をクリック</p>
-          <img src="image5.png"/>
-          <p>認証方法は「パスワード認証」を選択。パスワードを設定する。</p>
-          <img src="image6.png"/>
-        </section>
-      </section>
     </section>
     <hr />
     <footer>
-      <address>2020-06-13更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
+      <address>2021-09-04更新<br /><abbr title="Copyright">&#169;</abbr>2008, b_type. E-mail: b_type&#64;hotmail.co.jp</address>
     </footer>
   </body>
 </html>
